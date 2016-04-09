@@ -135,24 +135,46 @@ var GamePage = React.createClass({
                 if (data['team'] == 'white') {
                     console.log('we are white');
                     this.setState({'waiting': false, 'gameStarted': true, 'ourTeam': true});
+
+                    this.setState({'pieces': [
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png"],
+                        ["whiteRook.png", "whiteKnight.png", "whiteBishop.png", "whiteQueen.png", "whiteKing.png", "whiteBishop.png", "whiteKnight.png", "whiteRook.png"]
+                    ]})
                 } else {
                     console.log('we are black');
                     this.setState({'waiting': false, 'gameStarted': true, 'ourTeam': false});
+
+                    this.setState({'pieces': [
+                        ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
+                        ["blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                    ]});
                 }
 
                 this.setState({'gameId': data['id']});
 
-                this.setState({'pieces': [
-                    ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
-                    ["blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"],
-                    ["", "", "", "", "", "", "", ""],
-                    ["", "", "", "", "", "", "", ""],
-                    ["", "", "", "", "", "", "", ""],
-                    ["", "", "", "", "", "", "", ""],
-                    ["whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png"],
-                    ["whiteRook.png", "whiteKnight.png", "whiteBishop.png", "whiteQueen.png", "whiteKing.png", "whiteBishop.png", "whiteKnight.png", "whiteRook.png"]
-                ], 'isWhite': true
-                })
+                //this.setState({'pieces': [
+                //    ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
+                //    ["blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"],
+                //    ["", "", "", "", "", "", "", ""],
+                //    ["", "", "", "", "", "", "", ""],
+                //    ["", "", "", "", "", "", "", ""],
+                //    ["", "", "", "", "", "", "", ""],
+                //    ["whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png"],
+                //    ["whiteRook.png", "whiteKnight.png", "whiteBishop.png", "whiteQueen.png", "whiteKing.png", "whiteBishop.png", "whiteKnight.png", "whiteRook.png"]
+                //], 'isWhite': true
+                //})
 
             }.bind(this),
             error: function(xhr, status, err) {
