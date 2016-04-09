@@ -254,7 +254,7 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
                 tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
             tempPositions[loc] = endPos
-            if(not inCheck(tempPosition, whiteTurn)):
+            if(not inCheck(tempPositions, whiteTurn)):
                 return 4 + checkPos(positions, moveLoc, whiteTurn)
             else:
                 return 2
@@ -264,7 +264,7 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
                 tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
             tempPositions[loc] = endPos
-            if(not inCheck(tempPosition, whiteTurn)):
+            if(not inCheck(tempPositions, whiteTurn)):
                 return 4 + checkPos(positions, moveLoc, whiteTurn)
             else:
                 return 2
