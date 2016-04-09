@@ -22,7 +22,7 @@ print str(isValidMove(state, True, 54, 46)) + " = 3"
 print "queen"
 print str(isValidMove(state, True, 4, 44)) + " = 1"
 print str(isValidMove(state, False, 4, 12)) + " = 1"
-print str(isValidMove(state, True, 4, 31)) + " = 1"
+print str(isValidMove(state, True, 4, 31)) + " = 3"
 print str(isValidMove(state, True, 4, 43)) + " = 0"
 state[27] = 0
 print str(isValidMove(state, False, 4, 52)) + " = 15"
