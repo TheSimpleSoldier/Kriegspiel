@@ -10,6 +10,8 @@ var GamePage = React.createClass({
     },
     getInitialState: function() {
         return {
+            moveToX: 0,
+            moveToY: 0,
             selected: 0,
             isWhite: true,
             pieces: [
@@ -28,22 +30,25 @@ var GamePage = React.createClass({
     checkIfMoveValid: function(x, y) {
         var data = {
             'start': this.state.selected,
-            'end' : (x + 8 * y + 1)
+            'end' : (x + 8 * y + 1),
+            'isWhite': this.state.isWhite
         };
 
         $.ajax({
-            url: urls.GET.move,
-            data: data,
-            dataType: 'json',
-            success: function(data) {
-                if (data['move']) {
+                url: urls.POST.move,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                type: 'POST',
+                data: JSON.stringify(data),
+                success: function(data) {
+                    console.log(data);
+                    this.setState({'moveToX': x, 'moveToY': y});
                     this.movePiece(x, y);
-                }
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(urls.GET.allComments, status, err.toString());
-            }.bind(this)
-        });
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error(urls.POST.newComment, status, err.toString());
+                }.bind(this)
+            });
     },
 
     movePiece: function(x, y) {

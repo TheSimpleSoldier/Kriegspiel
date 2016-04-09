@@ -1,9 +1,10 @@
 module.exports = {
     GET: {
-        move: '/move',
+        move: '/move/',
         allComments: '/comments/'
     },
     POST: {
-        newComment: '/comment'
+        newComment: '/comment',
+        move: '/move'
     }
 };

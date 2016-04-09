@@ -15,3 +15,9 @@ def comment_to_json(comment):
         'text': comment.text,
         'author': comment.author
     }
+
+
+def move_response_to_json(move):
+    return {
+        'move': move
+    }
