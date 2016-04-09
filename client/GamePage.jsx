@@ -48,10 +48,11 @@ var GamePage = React.createClass({
                 success: function(data) {
                     console.log(data);
                     this.setState({'moveToX': x, 'moveToY': y});
-                    var data = data['move'];
+                    var newData = data['move'];
 
-                    if (data >= 3) {
-                        this.movePiece(x, y);
+                    if (newData >= 3) {
+                        this.updateGameState(data['board']);
+                        //this.movePiece(x, y);
                     }
 
                 }.bind(this),
@@ -171,11 +172,21 @@ var GamePage = React.createClass({
         });
     },
 
+    updateGameState: function(board) {
+        if (this.state.ourTeam) {
+
+        } else {
+
+        }
+    },
+
     gameStarted: function() {
       this.setState({'gameStarted': true, 'waiting': false});
     },
 
-    opponentMoved: function() {
+    opponentMoved: function(board) {
+        this.updateGameState(board);
+
         this.setState({'isWhite': !this.state.isWhite});
     },
 
@@ -343,7 +354,7 @@ var OpponentMoved = React.createClass({
             data: JSON.stringify(data),
             success: function(data) {
                 if (this.props.ourTeam && data['moved'] == 0 || !this.props.ourTeam && data['moved'] == 1) {
-                    this.props.callBack();
+                    this.props.callBack(data['loc']);
                     console.log('opponent moved: ' + data['moved']);
                 }
 

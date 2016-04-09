@@ -43,9 +43,9 @@ def opponent_moved():
     response.content_type = 'application/json'
 
     if len(oldBoard) > 0 and oldBoard[0].isWhite:
-        return models.opponent_moved_to_json('0')
+        return models.opponent_moved_to_json('0', oldBoard[0].board)
     else:
-        return models.opponent_moved_to_json('1')
+        return models.opponent_moved_to_json('1', oldBoard[0].board)
 
 
 
@@ -75,6 +75,7 @@ def post_move():
 
 
     if move >= 3:
+        oldBoard[0].lastMove = end
         oldBoard[0].isWhite = not is_white
         if move >= 4:
             positions[move - 4] = 0
@@ -89,7 +90,7 @@ def post_move():
         oldBoard[0].put()
 
     response.content_type = 'application/json'
-    return models.move_response_to_json(move)
+    return models.move_response_to_json(move, oldBoard[0].board)
 
 
 @post('/newgame')
@@ -110,7 +111,8 @@ def new_game():
         board = models.Gameboard(isWhite=True,
                                  board=GameEngine.getInitialState(),
                                  gameID=id,
-                                 hasStarted=False
+                                 hasStarted=False,
+                                 lastMove=0
         )
 
         board.put()

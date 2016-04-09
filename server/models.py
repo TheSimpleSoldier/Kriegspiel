@@ -14,6 +14,7 @@ class Gameboard(ndb.Model):
     isWhite = ndb.BooleanProperty()
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     board = ndb.JsonProperty()
+    lastMove = ndb.IntegerProperty()
 
 def comment_to_json(comment):
     return {
@@ -23,9 +24,10 @@ def comment_to_json(comment):
         'author': comment.author
     }
 
-def move_response_to_json(move):
+def move_response_to_json(move, board):
     return {
-        'move': move
+        'move': move,
+        'board': board
     }
 
 def new_game_to_json(team, id):
@@ -39,7 +41,8 @@ def opponent_joined_to_json(joined):
         'joined': joined
     }
 
-def opponent_moved_to_json(moved):
+def opponent_moved_to_json(moved, board):
     return {
-        'moved': moved
+        'moved': moved,
+        'board': board
     }
