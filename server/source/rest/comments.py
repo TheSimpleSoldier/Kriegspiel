@@ -73,9 +73,9 @@ def opponent_moved():
     checkLocs = GameEngine.inCheckLocs(oldBoard[0].board, oldBoard[0].isWhite)
 
     if len(oldBoard) > 0 and oldBoard[0].isWhite:
-        return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser, pawnLocs, checkLocs)
+        return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser, pawnLocs, checkLocs, oldBoard[0].isWhite)
     else:
-        return models.opponent_moved_to_json('1', oldBoard[0].board, oldBoard[0].loser, pawnLocs, checkLocs)
+        return models.opponent_moved_to_json('1', oldBoard[0].board, oldBoard[0].loser, pawnLocs, checkLocs, oldBoard[0].isWhite)
 
 
 @post('/surrender')
@@ -134,6 +134,8 @@ def post_move():
 
         oldBoard[0].put()
 
+    checkLocs = GameEngine.inCheckLocs(oldBoard[0].board, not oldBoard[0].isWhite)
+
     if GameEngine.inCheckMate(oldBoard[0].board, True):
         oldBoard[0].loser = 1
         oldBoard[0].put()
@@ -142,7 +144,7 @@ def post_move():
         oldBoard[0].put()
 
     response.content_type = 'application/json'
-    return models.move_response_to_json(move, oldBoard[0].board, oldBoard[0].loser)
+    return models.move_response_to_json(move, oldBoard[0].board, oldBoard[0].loser, checkLocs)
 
 
 @post('/newgame')

@@ -25,6 +25,7 @@ var GamePage = React.createClass({
             checkmate: 0,
             pawnKillLocs: [],
             checkLocs: [],
+            enemyCheckLocs: [],
             pieces: [
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
@@ -76,6 +77,7 @@ var GamePage = React.createClass({
                         this.setState({killedLoc: 0});
                         this.setState({checkmate: data['checkmate']});
                         this.setState({checkLocs: []});
+                        this.setState({enemyCheckLocs: data['checkLocs']});
                     }
 
                     this.setState({'unitKilled': ""});
@@ -279,11 +281,14 @@ var GamePage = React.createClass({
       this.setState({'gameStarted': true, 'waiting': false});
     },
 
-    opponentMoved: function(board, checkmate, pawnKillLocs, checkLocs) {
+    opponentMoved: function(board, checkmate, pawnKillLocs, checkLocs, isWhite) {
         this.updateGameState(board);
 
         this.setState({pawnKillLocs: pawnKillLocs});
-        this.setState({checkLocs: checkLocs});
+        if (isWhite == this.state.ourTeam) {
+            this.setState({checkLocs: checkLocs});
+        }
+
         this.setState({checkmate: checkmate});
         this.setState({'isWhite': !this.state.isWhite});
     },
@@ -397,30 +402,6 @@ var GamePage = React.createClass({
             </h3>);
         }
 
-        if (this.state.checkmate > 0) {
-            if (this.state.checkmate == 1) {
-                if (this.state.ourTeam) {
-                    msg = (<h3>
-                        Defeat! You have been utterly defeated.
-                    </h3>);
-                } else {
-                    msg = (<h3>
-                        Victory! The enemy is at your mercy.
-                    </h3>);
-                }
-            } else {
-                if (this.state.ourTeam) {
-                    msg = (<h3>
-                        Victory! The enemy is at your mercy.
-                    </h3>);
-                } else {
-                    msg = (<h3>
-                        Defeat! You have been utterly defeated.
-                    </h3>);
-                }
-            }
-        }
-
         var button = (<Button onClick={this.handleNewGame}>
                     New Game
                 </Button>);
@@ -448,6 +429,38 @@ var GamePage = React.createClass({
                     </h3>);
         }
 
+        var putEnemyInCheck = (<div></div>);
+
+        if (this.state.enemyCheckLocs.length > 0) {
+            putEnemyInCheck = (<h4>
+                You have put the enemy into check!
+            </h4>);
+        }
+
+        if (this.state.checkmate > 0) {
+            if (this.state.checkmate == 1) {
+                if (this.state.ourTeam) {
+                    msg = (<h3>
+                        Defeat! You have been utterly defeated.
+                    </h3>);
+                } else {
+                    msg = (<h3>
+                        Victory! The enemy is at your mercy.
+                    </h3>);
+                }
+            } else {
+                if (this.state.ourTeam) {
+                    msg = (<h3>
+                        Victory! The enemy is at your mercy.
+                    </h3>);
+                } else {
+                    msg = (<h3>
+                        Defeat! You have been utterly defeated.
+                    </h3>);
+                }
+            }
+        }
+
         return (
             <div style={divStyle} >
                 {waiting}
@@ -457,6 +470,7 @@ var GamePage = React.createClass({
                 {button}
 
                 {msg}
+                {putEnemyInCheck}
                 {killedOpponent}
 
                 <br /> <br /> <br />
@@ -625,7 +639,7 @@ var OpponentMoved = React.createClass({
             data: JSON.stringify(data),
             success: function(data) {
                 if (this.props.ourTeam && data['moved'] == 0 || !this.props.ourTeam && data['moved'] == 1 || data['checkmate'] > 0) {
-                    this.props.callBack(data['board'], data['checkmate'], data['pawnLocs'], data['checkLocs']);
+                    this.props.callBack(data['board'], data['checkmate'], data['pawnLocs'], data['checkLocs'], data['isWhite']);
                     console.log('opponent moved: ' + data['moved']);
                 }
 

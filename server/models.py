@@ -37,11 +37,12 @@ def comment_to_json(comment):
         'author': comment.author
     }
 
-def move_response_to_json(move, board, checkmate):
+def move_response_to_json(move, board, checkmate, checkLocs):
     return {
         'move': move,
         'board': board,
-        'checkmate': checkmate
+        'checkmate': checkmate,
+        'checkLocs': checkLocs
     }
 
 def new_game_to_json(team, id):
@@ -56,13 +57,14 @@ def opponent_joined_to_json(joined):
     }
 
 
-def opponent_moved_to_json(moved, board, checkmate, pawnLocs, checkLocs):
+def opponent_moved_to_json(moved, board, checkmate, pawnLocs, checkLocs, isWhite):
     return {
         'moved': moved,
         'board': board,
         'checkmate': checkmate,
         'pawnLocs': pawnLocs,
-        'checkLocs': checkLocs
+        'checkLocs': checkLocs,
+        'isWhite': isWhite
     }
 
 def board_to_json(board, loser):

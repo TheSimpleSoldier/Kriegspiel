@@ -39,7 +39,8 @@ var InterfaceComponent = React.createClass({
                         is legal then the player's piece will be moved to the new location.  Otherwise the player will get to try a different move.
                         In this client the unit with a green background is the unit that was moved last turn, the unit with a blue background is the currently
                         selected unit, an orange sqaure indicates that the current player is in check in the direction of the orange square relative to the king,
-                        and if there is a red square then a unit was captured by the opponent on that square on the previous move.  For more information
+                        and if there is a red square then a unit was captured by the opponent on that square on the previous move.  There is additional information
+                        posted above the game board about the current state of the game.  For more information
                         on the game of kriegspiel visit these sites <a href="https://en.wikipedia.org/wiki/Kriegspiel_(chess)"> Wikipedia </a> <a href="http://www.chessvariants.com/incinf.dir/kriegspiel.html"> chessvariants.com </a>
                     </p>
                 </Well>
