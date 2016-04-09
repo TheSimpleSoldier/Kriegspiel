@@ -112,7 +112,7 @@ def post_move():
 
     positions = oldBoard[0].board
 
-    move = GameEngine.isValidMove(positions, is_white, start, end)
+    move = GameEngine.isValidMove(positions, oldBoard[0].promotions, is_white, start, end)
 
     logging.info("move made")
     logging.info(start)
