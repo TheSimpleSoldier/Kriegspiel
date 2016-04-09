@@ -257,3 +257,17 @@ def create_new_comment():
     comment.put()
     response.content_type = 'application/json'
     return models.comment_to_json(comment)
+
+def promote_pawn(gameboard):
+    board = gameboard.board
+    promotions = gameboard.promotions
+    for i in range (8,16):
+        if (board[i] -1) / 8 == 0:
+            promotions[i] = True
+
+    for i in range(24,32):
+        if (board[i]-1) / 8 == 7:
+            promotions[i] = True
+
+    gameboard.promotions = promotions
+    return gameboard

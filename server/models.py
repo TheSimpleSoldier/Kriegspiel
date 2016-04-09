@@ -12,6 +12,7 @@ class Gameboard(ndb.Model):
     hasStarted = ndb.BooleanProperty()
     gameID = ndb.IntegerProperty()
     isWhite = ndb.BooleanProperty()
+    promotions = ndb.JsonProperty()
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     board = ndb.JsonProperty()
     lastMove = ndb.IntegerProperty()
@@ -41,7 +42,7 @@ def get_last_game_to_json(game, ourTeam):
         'board': game.board,
         'lastMove': game.lastMove,
         'loser': game.loser,
-
+        'promoted': game.promoted
     }
 
 def comment_to_json(comment):
