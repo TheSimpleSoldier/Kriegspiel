@@ -43,7 +43,12 @@ var GamePage = React.createClass({
                 success: function(data) {
                     console.log(data);
                     this.setState({'moveToX': x, 'moveToY': y});
-                    this.movePiece(x, y);
+                    var data = data['move'];
+
+                    if (data >= 3) {
+                        this.movePiece(x, y);
+                    }
+                    
                 }.bind(this),
                 error: function(xhr, status, err) {
                     console.error(urls.POST.newComment, status, err.toString());
