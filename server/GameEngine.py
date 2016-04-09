@@ -7,21 +7,21 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
         # king move
         toReturn = 0
         if(move(startPos, 1, 1) == endPos):
-            toReturn =  move(startPos(1, 1))
+            toReturn =  move(startPos, 1, 1)
         elif(move(startPos, -1, 1) == endPos):
-            toReturn =  move(startPos(-1, 1))
+            toReturn =  move(startPos, -1, 1)
         elif(move(startPos, 1, -1) == endPos):
-            toReturn =  move(startPos(1, -1))
+            toReturn =  move(startPos, 1, -1)
         elif(move(startPos, -1, -1) == endPos):
-            toReturn =  move(startPos(-1, -1))
+            toReturn =  move(startPos, -1, -1)
         elif(move(startPos, 1, 0) == endPos):
-            toReturn =  move(startPos(1, 0))
+            toReturn =  move(startPos, 1, 0)
         elif(move(startPos, 0, 1) == endPos):
-            toReturn =  move(startPos(0, 1))
+            toReturn =  move(startPos, 0, 1)
         elif(move(startPos, -1, 0) == endPos):
-            toReturn =  move(startPos(-1, 0))
+            toReturn =  move(startPos, -1, 0)
         elif(move(startPos, 0, -1) == endPos):
-            toReturn =  move(startPos(0, -1))
+            toReturn =  move(startPos, 0, -1)
 
         if(toReturn == 0):
             return 0
@@ -208,7 +208,7 @@ def inCheck(positions, white):
     
     for k in range(0, 15):
         if(positions[start + k] != 0):
-            if(isValidMove(positions, positions[start + k], positions[loc])):
+            if(isValidMove(positions, white, positions[start + k], positions[loc])):
                 return True
 
     for k in range(-1,1):
@@ -220,4 +220,4 @@ def inCheck(positions, white):
     return False
 
 def getInitialState():
-    return [60, 61, 57, 64, 58, 63, 59, 62, 49, 50, 51, 52, 53, 54, 55, 56, 4, 5, 1, 8, 2, 7, 3, 6, 9, 10, 11, 12, 13, 14, 15, 16]
+    return [61, 60, 57, 64, 58, 63, 59, 62, 49, 50, 51, 52, 53, 54, 55, 56, 5, 4, 1, 8, 2, 7, 3, 6, 9, 10, 11, 12, 13, 14, 15, 16]
