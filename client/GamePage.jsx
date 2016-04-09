@@ -75,6 +75,7 @@ var GamePage = React.createClass({
                         this.setState({isWhite: !this.state.isWhite});
                         this.setState({killedLoc: 0});
                         this.setState({checkmate: data['checkmate']});
+                        this.setState({checkLocs: []});
                     }
 
                     this.setState({'unitKilled': ""});
@@ -732,7 +733,7 @@ var Piece = React.createClass({
         if (this.props.selected) {
             buttonStyle['backgroundColor'] = '#BFEFFF';
         } else if(this.props.checkLocs) {
-            buttonStyle['backgroundColor'] = '#333333';
+            buttonStyle['backgroundColor'] = '#FF9912';
         } else if (this.props.pawnKillLoc) {
             buttonStyle['backgroundColor'] = '#FBEC5D';
         } else if (this.props.killedLoc) {
