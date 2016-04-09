@@ -373,7 +373,7 @@ def pawnAttacks(positions, promoted, white):
         start = 24
     
     for k in range(0, 8):
-        if(positions[start + k] != 0):
+        if(positions[start + k] != 0 and promoted[start + k] == False):
             if(white): 
                 moveLoc = move(positions[start + k], 1, -1)
                 if(moveLoc > 0 and isValidMove(positions, promted, white, positions[start + k], moveLoc) >= 3):

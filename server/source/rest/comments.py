@@ -62,15 +62,15 @@ def opponent_moved():
 
     response.content_type = 'application/json'
 
-    if GameEngine.inCheckMate(oldBoard[0].board, True):
+    if GameEngine.inCheckMate(oldBoard[0].board, oldBoard[0].promotions, True):
         oldBoard[0].loser = 1
         oldBoard[0].put()
-    elif GameEngine.inCheckMate(oldBoard[0].board, False):
+    elif GameEngine.inCheckMate(oldBoard[0].board, oldBoard[0].promotions, False):
         oldBoard[0].loser = 2
         oldBoard[0].put()
 
-    pawnLocs = GameEngine.pawnAttacks(oldBoard[0].board, oldBoard[0].isWhite)
-    checkLocs = GameEngine.inCheckLocs(oldBoard[0].board, oldBoard[0].isWhite)
+    pawnLocs = GameEngine.pawnAttacks(oldBoard[0].board, oldBoard[0].promotions, oldBoard[0].isWhite)
+    checkLocs = GameEngine.inCheckLocs(oldBoard[0].board, oldBoard[0].promotions, oldBoard[0].isWhite)
 
     if len(oldBoard) > 0 and oldBoard[0].isWhite:
         return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser, pawnLocs, checkLocs, oldBoard[0].isWhite)
@@ -134,12 +134,12 @@ def post_move():
         oldBoard[0].promotions = promote_pawn(oldBoard[0])
         oldBoard[0].put()
 
-    checkLocs = GameEngine.inCheckLocs(oldBoard[0].board, not oldBoard[0].isWhite)
+    checkLocs = GameEngine.inCheckLocs(oldBoard[0].board, oldBoard[0].promotions, not oldBoard[0].isWhite)
 
-    if GameEngine.inCheckMate(oldBoard[0].board, True):
+    if GameEngine.inCheckMate(oldBoard[0].board, oldBoard[0].promotions, True):
         oldBoard[0].loser = 1
         oldBoard[0].put()
-    elif GameEngine.inCheckMate(oldBoard[0].board, False):
+    elif GameEngine.inCheckMate(oldBoard[0].board, oldBoard[0].promotions, False):
         oldBoard[0].loser = 2
         oldBoard[0].put()
 
