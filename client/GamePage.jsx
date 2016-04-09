@@ -359,7 +359,7 @@ var GamePage = React.createClass({
             if (this.state.checkmate == 1) {
                 if (this.state.ourTeam) {
                     msg = (<h3>
-                        Defeat! You have been put into check mate.
+                        Defeat! You have been utterly defeated.
                     </h3>);
                 } else {
                     msg = (<h3>
@@ -373,7 +373,7 @@ var GamePage = React.createClass({
                     </h3>);
                 } else {
                     msg = (<h3>
-                        Defeat! You have been put into check mate.
+                        Defeat! You have been utterly defeated.
                     </h3>);
                 }
             }
@@ -578,7 +578,7 @@ var OpponentMoved = React.createClass({
             type: 'POST',
             data: JSON.stringify(data),
             success: function(data) {
-                if (this.props.ourTeam && data['moved'] == 0 || !this.props.ourTeam && data['moved'] == 1) {
+                if (this.props.ourTeam && data['moved'] == 0 || !this.props.ourTeam && data['moved'] == 1 || data['checkmate'] > 0) {
                     this.props.callBack(data['board'], data['checkmate']);
                     console.log('opponent moved: ' + data['moved']);
                 }

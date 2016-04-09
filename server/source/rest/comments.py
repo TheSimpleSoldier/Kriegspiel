@@ -78,10 +78,10 @@ def opponent_moved():
 @post('/surrender')
 def surrender():
     game_id = request.json.get('gameId')
-    checkmate = request.json.get('surrender')
+    team = request.json.get('ourTeam')
 
     oldBoard = models.Gameboard.query().filter(models.Gameboard.gameID == game_id).fetch(1)
-    if checkmate:
+    if team:
         oldBoard[0].loser = 1
     else:
         oldBoard[0].loser = 2
