@@ -14,11 +14,14 @@ print "king"
 print str(isValidMove(state, False, 5, 13)) + " = 1"
 state[28] = 0
 print str(isValidMove(state, False, 5, 13)) + " = 3"
+
 print "black pawn"
 print str(isValidMove(state, True, 9, 17)) + " = 3"
 print str(isValidMove(state, True, 9, 1)) + " = 0"
+
 print "white pawn"
 print str(isValidMove(state, True, 54, 46)) + " = 3"
+
 print "queen"
 print str(isValidMove(state, True, 4, 44)) + " = 1"
 print str(isValidMove(state, False, 4, 12)) + " = 1"
@@ -26,15 +29,19 @@ print str(isValidMove(state, True, 4, 31)) + " = 3"
 print str(isValidMove(state, True, 4, 43)) + " = 0"
 state[27] = 0
 print str(isValidMove(state, False, 4, 52)) + " = 15"
+
 print "rook"
 print str(isValidMove(state, True, 57, 41)) + " = 1"
 print str(isValidMove(state, True, 57, 42)) + " = 0"
+
 print "bishop"
 print str(isValidMove(state, True, 59, 45)) + " = 1"
 print str(isValidMove(state, True, 59, 46)) + " = 0"
+
 print "knight"
 print str(isValidMove(state, True, 58, 43)) + " = 3"
 print str(isValidMove(state, True, 58, 44)) + " = 0"
+
 print "checkmate"
 checkMateState = [0] * 32
 checkMateState[0] = 1
@@ -56,6 +63,7 @@ check3State[0] = 1
 check3State[2] = 12
 check3State[18] = 4
 print str(inCheckMate(check3State, True)) + " = False"
+
 print "check"
 checkState = [0] * 32
 checkState[0] = 1
@@ -64,3 +72,15 @@ checkState[2] =16
 print str(isValidMove(checkState, True, 16, 8)) + " = 2"
 checkState[1] = 2
 print str(isValidMove(checkState, True, 16, 8)) + " = 3"
+
+print "pawn locs"
+attackState = [0] * 32
+attackState[8] = 10
+attackState[17] = 3
+attackState[18] = 1
+attackState[24] = 15
+attackState[1] = 22
+attackState[2] = 24
+print str(pawnAttacks(attackState, True)) + " = [3,1]"
+print str(pawnAttacks(attackState, False)) + " = [24,22]"
+print str(pawnAttacks(getInitialState(), False)) + " = []"
