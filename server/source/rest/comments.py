@@ -22,7 +22,7 @@ def post_move():
 
     move = GameEngine.isValidMove(GameEngine.getInitialState(), is_white, start, end)
 
-    if move >= 3:
+    # if move >= 3:
         # update state
 
     response.content_type = 'application/json'
