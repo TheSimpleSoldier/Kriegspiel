@@ -58,9 +58,9 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
         upRight = moveMany(positions, startPos, endPos, 1, -1)
         if(upRight != -1):
             return upRight
-        downLeft = moveMany(positions, startPos, endPos, -1, 1)
-        if(downLeft != -1):
-            return downLeft
+        downRight = moveMany(positions, startPos, endPos, 1, 1)
+        if(downRight != -1):
+            return downRight
         return 0
 
     elif(loc == 2 or loc == 3 or loc == 18 or loc == 19):
@@ -81,22 +81,22 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
 
     elif(loc == 4 or loc == 5 or loc == 20 or loc == 21):
         # knight move
-        if(moveLoc != -1 and move(startPos, 1, 2) == endPos):
-            return  4 + checkPos(positions, move(startPos(1, 2)))
-        if(moveLoc != -1 and move(startPos, -1, 2) == endPos):
-            return  4 + checkPos(positions, move(startPos(-1, 2)))
-        if(moveLoc != -1 and move(startPos, 1, -2) == endPos):
-            return  4 + checkPos(positions, move(startPos(1, -2)))
-        if(moveLoc != -1 and move(startPos, -1, -2) == endPos):
-            return  4 + checkPos(positions, move(startPos(-1, -2)))
-        if(moveLoc != -1 and move(startPos, 2, 1) == endPos):
-            return  4 + checkPos(positions, move(startPos(2, 1)))
-        if(moveLoc != -1 and move(startPos, -2, 1) == endPos):
-            return  4 + checkPos(positions, move(startPos(-2, 1)))
-        if(moveLoc != -1 and move(startPos, 2, -1) == endPos):
-            return  4 + checkPos(positions, move(startPos(2, -1)))
-        if(moveLoc != -1 and move(startPos, -2, -1) == endPos):
-            return  4 + checkPos(positions, move(startPos(-2, -1)))
+        if(move(startPos, 1, 2) == endPos):
+            return  4 + checkPos(positions, move(startPos, 1, 2))
+        if(move(startPos, -1, 2) == endPos):
+            return  4 + checkPos(positions, move(startPos, -1, 2))
+        if(move(startPos, 1, -2) == endPos):
+            return  4 + checkPos(positions, move(startPos, 1, -2))
+        if(move(startPos, -1, -2) == endPos):
+            return  4 + checkPos(positions, move(startPos, -1, -2))
+        if(move(startPos, 2, 1) == endPos):
+            return  4 + checkPos(positions, move(startPos, 2, 1))
+        if(move(startPos, -2, 1) == endPos):
+            return  4 + checkPos(positions, move(startPos, -2, 1))
+        if(move(startPos, 2, -1) == endPos):
+            return  4 + checkPos(positions, move(startPos, 2, -1))
+        if(move(startPos, -2, -1) == endPos):
+            return  4 + checkPos(positions, move(startPos, -2, -1))
         return 0
 
     elif(loc == 6 or loc == 7 or loc == 22 or loc == 23):
@@ -110,9 +110,10 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
         upRight = moveMany(positions, startPos, endPos, 1, -1)
         if(upRight != -1):
             return upRight
-        downLeft = moveMany(positions, startPos, endPos, -1, 1)
-        if(downLeft != -1):
-            return downLeft
+        downRight = moveMany(positions, startPos, endPos, 1, 1)
+        if(downRight != -1):
+            return downRight
+
         return 0
 
     elif(loc == 8 or loc == 9 or loc == 10 or loc == 11 or loc == 12 or loc == 13 or loc == 14 or loc == 15):
@@ -146,14 +147,17 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
         return 0
 
 def moveMany(positions, startPos, endPos, xMoveOne, yMoveOne):
+    blocked = False
     xMove = xMoveOne
     yMove = yMoveOne
     moveLoc = move(startPos, xMove, yMove)
     while(moveLoc != -1):
         if(moveLoc == endPos):
+            if(blocked):
+                return 1
             return 4 + checkPos(positions, endPos)
-        if(checkPos(positions, endPos) != -1):
-            return 1
+        if(checkPos(positions, moveLoc) != -1):
+            blocked = True
         xMove += xMoveOne
         yMove += yMoveOne
         moveLoc = move(startPos, xMove, yMove)
@@ -172,9 +176,9 @@ def move(startPos, xMove, yMove):
 
     return endPos
 
-def checkPos(positions, loc):
+def checkPos(positions, moveLoc):
     for loc in range(0, 32):
-        if(positions[loc] == loc):
+        if(positions[loc] == moveLoc):
             return loc
     return -1
 
