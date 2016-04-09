@@ -63,6 +63,20 @@ check3State[0] = 1
 check3State[2] = 12
 check3State[18] = 4
 print str(inCheckMate(check3State, True)) + " = False"
+check3State = [0] * 32
+check3State[4] = 11
+check3State[16] = 5
+check3State[24] = 12
+check3State[25] = 13
+check3State[26] = 14
+print str(inCheckMate(check3State, False)) + " = False"
+check3State = [0] * 32
+check3State[4] = 15
+check3State[16] = 32
+check3State[24] = 23
+check3State[25] = 31
+check3State[26] = 39
+print str(inCheckMate(check3State, False)) + " = False"
 
 print "check"
 checkState = [0] * 32
