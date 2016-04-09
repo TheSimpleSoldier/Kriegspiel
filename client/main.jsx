@@ -29,7 +29,15 @@ var InterfaceComponent = React.createClass({
             nav = 1;
             content = (
                 <Well>
-                    <p>Welcome!</p>
+                    <h1>Welcome to Kriegspiel!</h1>
+
+                    <p> Kriegspiel is a variation of chess where you cannot see your opponents pieces. On a players turn they will suggest a
+                        move and the game engine will determine if the move is valid based on the locations of the opponent's pieces.  If the move
+                        is legal then the player's piece will be moved to the new location.  Otherwise the player will get to try a different move.
+                        In this client the unit with a green background is the unit that was moved last turn, the unit with a blue background is the currently
+                        selected unit and if there is a red square then a unit was captured by the opponent on that square on the previous move.  For more information
+                        on the game of kriegspiel visit these sites <a href="https://en.wikipedia.org/wiki/Kriegspiel_(chess)"> Wikipedia </a> <a href="http://www.chessvariants.com/incinf.dir/kriegspiel.html"> chessvariants.com </a>
+                    </p>
                 </Well>
             );
         }

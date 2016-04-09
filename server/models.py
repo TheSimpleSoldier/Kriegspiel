@@ -55,16 +55,19 @@ def opponent_joined_to_json(joined):
         'joined': joined
     }
 
-def opponent_moved_to_json(moved, board, checkmate):
+
+def opponent_moved_to_json(moved, board, checkmate, pawnLocs):
     return {
         'moved': moved,
         'board': board,
-        'checkmate': checkmate
+        'checkmate': checkmate,
+        'pawnLocs': pawnLocs
     }
 
-def board_to_json(board):
+def board_to_json(board, loser):
     return {
-        'board': board
+        'board': board,
+        'loser': loser
     }
 
 def login_to_json(userInfo):

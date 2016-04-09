@@ -69,10 +69,13 @@ def opponent_moved():
         oldBoard[0].loser = 2
         oldBoard[0].put()
 
+
+    pawnLocs = []
+
     if len(oldBoard) > 0 and oldBoard[0].isWhite:
-        return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser)
+        return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser, pawnLocs)
     else:
-        return models.opponent_moved_to_json('1', oldBoard[0].board, oldBoard[0].loser)
+        return models.opponent_moved_to_json('1', oldBoard[0].board, oldBoard[0].loser, pawnLocs)
 
 
 @post('/surrender')
@@ -176,7 +179,7 @@ def update_board():
     oldBoard = models.Gameboard.query().filter(models.Gameboard.gameID == game_id).fetch(1)
 
     response.content_type = 'application/json'
-    return models.board_to_json(oldBoard[0].board)
+    return models.board_to_json(oldBoard[0].board, oldBoard[0].loser)
 
 
 @post('/comment')
