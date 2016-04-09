@@ -1,0 +1,19 @@
+positions
+[wK, wQ, wR1, wR2, wKn1, wKn2, wB1, wB2, wP1, wP2, wP3, wP4, wP5, wP6, wP7, wP8, 
+ bK, bQ, bR1, bR2, bKn1, bKn2, bB1, bB2, bP1, bP2, bP3, bP4, bP5, bP6, bP7, bP8]
+
+int isValidMove(int[32] positions, bool whiteTurn, int startPos, int endPos)
+    0- invalid by chess
+    1- blocked
+    2- moving into check
+    3- valid move
+    4 + loc- valid move and take piece at loc - 4
+
+bool inCheck(int[32] positions, bool white)
+    true- check
+    false- not check
+
+int[32] getInitialState()
+    returns all initial positions
+
+
