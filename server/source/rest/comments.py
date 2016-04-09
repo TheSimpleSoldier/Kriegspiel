@@ -27,12 +27,10 @@ def opponent_joined():
 
     response.content_type = 'application/json'
 
-    # if len(oldBoard) > 0 and oldBoard[0].hasStarted:
-    #     return models.opponent_joined_to_json('1')
-    # else:
-    #     return models.opponent_joined_to_json('0')
-
-    return models.opponent_joined_to_json('1')
+    if len(oldBoard) > 0 and oldBoard[0].hasStarted:
+        return models.opponent_joined_to_json('1')
+    else:
+        return models.opponent_joined_to_json('0')
 
 
 @post('/opponentMoved')
@@ -44,12 +42,11 @@ def opponent_moved():
 
     response.content_type = 'application/json'
 
-    # if len(oldBoard) > 0 and oldBoard[0].isWhite:
-    #     return models.opponent_moved_to_json('0')
-    # else:
-    #     return models.opponent_moved_to_json('1')
+    if len(oldBoard) > 0 and oldBoard[0].isWhite:
+        return models.opponent_moved_to_json('0')
+    else:
+        return models.opponent_moved_to_json('1')
 
-    return models.opponent_moved_to_json('0')
 
 
 @post('/move')
@@ -113,7 +110,7 @@ def new_game():
         board = models.Gameboard(isWhite=True,
                                  board=GameEngine.getInitialState(),
                                  gameID=id,
-                                 hasStarted=True
+                                 hasStarted=False
         )
 
         board.put()

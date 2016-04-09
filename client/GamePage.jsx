@@ -19,8 +19,6 @@ var GamePage = React.createClass({
             gameId: 0,
             ourTeam: true,
             pieces: [
-                //["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
-                //["blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"],
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
@@ -29,8 +27,6 @@ var GamePage = React.createClass({
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
-                //["whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png"],
-                //["whiteRook.png", "whiteKnight.png", "whiteBishop.png", "whiteQueen.png", "whiteKing.png", "whiteBishop.png", "whiteKnight.png", "whiteRook.png"]
             ]
         };
     },
@@ -78,7 +74,7 @@ var GamePage = React.createClass({
         positions[oldY][oldX] = "";
         this.setState({pieces: positions});
         this.setState({selected: 0});
-        //this.setState({isWhite: !this.state.isWhite});
+        this.setState({isWhite: !this.state.isWhite});
         this.setState({});
     },
 
@@ -138,7 +134,7 @@ var GamePage = React.createClass({
 
                 if (data['team'] == 'white') {
                     console.log('we are white');
-                    this.setState({'waiting': false, 'gameStarted': true, 'ourTeam': true});
+                    this.setState({'waiting': true, 'gameStarted': false, 'ourTeam': true});
 
                     this.setState({'pieces': [
                         ["", "", "", "", "", "", "", ""],
@@ -166,19 +162,7 @@ var GamePage = React.createClass({
                     ]});
                 }
 
-                this.setState({'gameId': data['id']});
-
-                //this.setState({'pieces': [
-                //    ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
-                //    ["blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"],
-                //    ["", "", "", "", "", "", "", ""],
-                //    ["", "", "", "", "", "", "", ""],
-                //    ["", "", "", "", "", "", "", ""],
-                //    ["", "", "", "", "", "", "", ""],
-                //    ["whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png"],
-                //    ["whiteRook.png", "whiteKnight.png", "whiteBishop.png", "whiteQueen.png", "whiteKing.png", "whiteBishop.png", "whiteKnight.png", "whiteRook.png"]
-                //], 'isWhite': true
-                //})
+                this.setState({'gameId': data['id'], 'isWhite': true});
 
             }.bind(this),
             error: function(xhr, status, err) {
@@ -191,7 +175,7 @@ var GamePage = React.createClass({
       this.setState({'gameStarted': true, 'waiting': false});
     },
 
-    opponentMoved: function(moved) {
+    opponentMoved: function() {
         this.setState({'isWhite': !this.state.isWhite});
     },
 
@@ -207,15 +191,17 @@ var GamePage = React.createClass({
         var opponentMoved = (<div></div>);
 
         if (this.state.gameStarted && this.state.isWhite != this.state.ourTeam) {
-            //opponentMoved = (
-            //    //<OpponentMoved pollInterval={1000} callBack={this.opponentMoved} gameId={this.state.gameId} outTeam={this.state.ourTeam} />
-            //)
+            opponentMoved = (
+                <OpponentMoved pollInterval={1000} callBack={this.opponentMoved} gameId={this.state.gameId} ourTeam={this.state.ourTeam} />
+            )
         }
 
+        console.log('gameStarted: ' + this.state.gameStarted);
+
         if (this.state.waiting) {
-            //waiting = (
-            //    <WaitingForOpponent pollInterval={1000} callBack={this.gameStarted} gameId={this.state.gameId} />
-            //);
+            waiting = (
+                <WaitingForOpponent pollInterval={1000} callBack={this.gameStarted} gameId={this.state.gameId} />
+            );
         }
 
         return (
@@ -323,40 +309,32 @@ var GamePage = React.createClass({
         );
     }
 });
-/*
-$.ajax({
-                url: urls.POST.move,
-                dataType: 'json',
-                contentType: 'application/json; charset=utf-8',
-                type: 'POST',
-                data: JSON.stringify(data),
-                success: function(data) {
-                    console.log(data);
-                    this.setState({'moveToX': x, 'moveToY': y});
-                    var data = data['move'];
 
-                    if (data >= 3) {
-                        this.movePiece(x, y);
-                    }
-
-                }.bind(this),
-                error: function(xhr, status, err) {
-                    console.error(urls.POST.newComment, status, err.toString());
-                }.bind(this)
-            });
- */
+var SetIntervalMixin = {
+  componentWillMount: function() {
+    this.intervals = [];
+  },
+  setInterval: function() {
+    this.intervals.push(setInterval.apply(null, arguments));
+  },
+  componentWillUnmount: function() {
+    this.intervals.map(clearInterval);
+  }
+};
 
 var OpponentMoved = React.createClass({
+    mixins: [SetIntervalMixin],
     propTypes: {
         callBack: React.PropTypes.func.isRequired,
-        gameId: React.PropTypes.string.isRequired,
+        gameId: React.PropTypes.number.isRequired,
         ourTeam: React.PropTypes.bool.isRequired,
     },
     loadFromServer: function() {
+        console.log('polling opponent moved');
+
         var data = {
             'gameId': this.props.gameId
         };
-        console.log('mounted opponent moved');
         $.ajax({
             url: urls.POST.opponentMoved,
             dataType: 'json',
@@ -364,10 +342,9 @@ var OpponentMoved = React.createClass({
             type: 'POST',
             data: JSON.stringify(data),
             success: function(data) {
-                console.log('opponent moved: ' + data);
-
-                if (this.props.ourTeam && data['moved'] == 1 || !this.props.ourTeam && data['moved'] == 0) {
-                    this.props.callBack(data['moved']);
+                if (this.props.ourTeam && data['moved'] == 0 || !this.props.ourTeam && data['moved'] == 1) {
+                    this.props.callBack();
+                    console.log('opponent moved: ' + data['moved']);
                 }
 
 
@@ -378,9 +355,12 @@ var OpponentMoved = React.createClass({
         });
     },
     componentDidMount: function() {
+        console.log("component Mounted");
         this.loadFromServer();
-        setInterval(this.loadFromServer, this.props.pollInterval);
+        this.setInterval(this.loadFromServer, this.props.pollInterval);
     },
+
+
     render: function() {
         return (
             <div>
@@ -390,6 +370,7 @@ var OpponentMoved = React.createClass({
 });
 
 var WaitingForOpponent = React.createClass({
+    mixins: [SetIntervalMixin],
     propTypes: {
         callBack: React.PropTypes.func.isRequired,
         gameId: React.PropTypes.string.isRequired
@@ -418,7 +399,7 @@ var WaitingForOpponent = React.createClass({
     },
     componentDidMount: function() {
         this.loadFromServer();
-        setInterval(this.loadFromServer, this.props.pollInterval);
+        this.setInterval(this.loadFromServer, this.props.pollInterval);
     },
     render: function() {
         return (
@@ -461,7 +442,7 @@ var Piece = React.createClass({
         };
 
         if (this.props.selected) {
-            buttonStyle['backgroundColor'] = '#0000ff';
+            buttonStyle['backgroundColor'] = '#BFEFFF';
         } else if (this.props.xLoc % 2 == this.props.yLoc % 2) {
              buttonStyle['backgroundColor'] = '#ffffff';
         }
