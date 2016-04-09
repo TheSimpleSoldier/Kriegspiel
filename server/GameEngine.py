@@ -337,7 +337,7 @@ def inCheck(positions, white):
 
     for k in range(-1,1):
         for a in range(-1,1):
-            if(k != 0 and a != 0):
+            if(k != 0 or a != 0):
                 if(move(positions[0], k, a) == positions[16]):
                     return True
 
@@ -406,7 +406,7 @@ def inCheckLocs(positions, white):
 
     for k in range(-1,1):
         for a in range(-1,1):
-            if(k != 0 and a != 0):
+            if(k != 0 or a != 0):
                 if(move(positions[0], k, a) == positions[16]):
                     if(white):
                         toReturn.append(positions[16])
