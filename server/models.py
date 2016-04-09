@@ -16,10 +16,12 @@ class Gameboard(ndb.Model):
     board = ndb.JsonProperty()
     lastMove = ndb.IntegerProperty()
     loser = ndb.IntegerProperty()
+    whiteId = ndb.StringProperty()
+    blackId = ndb.StringProperty()
 
 class User(ndb.Model):
     userID = ndb.IntegerProperty()
-    alias = ndb.StringProperty()
+    alias = ndb.StringProperty("Anonymous")
     spriteURL = ndb.StringProperty()
     games = ndb.JsonProperty()
     kingURL = ndb.StringProperty()
@@ -28,6 +30,19 @@ class User(ndb.Model):
     bishopURL = ndb.StringProperty()
     knightURL = ndb.StringProperty()
     pawnURL = ndb.StringProperty()
+
+
+def get_last_game_to_json(game, ourTeam):
+    return {
+        'hasStarted': game.hasStarted,
+        'gameID': game.gameID,
+        'isWhite': game.isWhite,
+        'ourTeam': ourTeam,
+        'board': game.board,
+        'lastMove': game.lastMove,
+        'loser': game.loser,
+
+    }
 
 def comment_to_json(comment):
     return {

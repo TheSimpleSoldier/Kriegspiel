@@ -32,6 +32,12 @@ indexes:
   - name: created
     direction: desc
 
+- kind: Gameboard
+  properties:
+  - name: whiteId
+  - name: gameID
+    direction: desc
+
 - kind: Log
   ancestor: yes
   properties:

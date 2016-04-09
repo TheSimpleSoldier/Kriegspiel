@@ -10,6 +10,9 @@ module.exports = {
         opponentJoined: '/opponentJoined',
         opponentMoved: '/opponentMoved',
         boardUpdate: '/boardUpdate',
-        surrender: '/surrender'
+        surrender: '/surrender',
+        getLastGame: '/getLastGame',
+        createUser: '/createUser',
+        updateAlias: '/updateAlias'
     }
 };

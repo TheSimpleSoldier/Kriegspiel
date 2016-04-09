@@ -68,7 +68,6 @@ var GamePage = React.createClass({
                 type: 'POST',
                 data: JSON.stringify(data),
                 success: function(data) {
-                    this.setState({waitingForMove: false});
                     this.setState({'moveToX': x, 'moveToY': y});
                     var newData = data['move'];
                     console.log("move: " + newData);
@@ -91,6 +90,8 @@ var GamePage = React.createClass({
                         this.setState({});
                         this.setState({'unitKilled': this.unitKilled(newData - 4)});
                     }
+
+                    this.setState({waitingForMove: false});
 
                 }.bind(this),
                 error: function(xhr, status, err) {
@@ -143,6 +144,57 @@ var GamePage = React.createClass({
 
             this.checkIfMoveValid(x,y);
         }
+    },
+
+    loadGame: function() {
+        this.clearState();
+        $.ajax({
+            url: urls.POST.getLastGame,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST',
+            success: function(data) {
+
+                console.log("LOADGAMEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+                console.log(data);
+
+                var loser = data['loser'];
+
+                if (loser == undefined) {
+                    loser = 0;
+                }
+
+                this.setState({
+                    waiting: false,
+                    gameStarted: data['hasStarted'],
+                    ourTeam: data['ourTeam'],
+                    isWhite: data['isWhite'],
+                    gameId: data['gameID'],
+                    loser: loser,
+                    'pieces': [
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                    ]
+                });
+
+
+                if (data['hasStarted']){
+                    this.setState({moves: 2});
+                }
+
+                this.updateGameState(data['board'], data['loser']);
+
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(urls.POST.newComment, status, err.toString());
+            }.bind(this)
+        });
     },
 
     handleNewGame: function() {
@@ -244,8 +296,11 @@ var GamePage = React.createClass({
             this.setState({checkmate: loser});
         }
         if (board == undefined || board.length < 32 || this.state.moves == 0 || !this.shouldUpdateBoard(board)) {
+            console.log("failed to update game state");
             return;
         }
+
+        console.log("updating game state!!");
 
         for (var i = 0; i < this.state.board.length; i++) {
             // if a piece was killed
@@ -280,6 +335,8 @@ var GamePage = React.createClass({
                 }
             }
         }
+
+        this.setState({'pieces': positions});
     },
 
     gameStarted: function() {
@@ -411,9 +468,15 @@ var GamePage = React.createClass({
             </h3>);
         }
 
-        var button = (<Button onClick={this.handleNewGame}>
+        var button = (
+            <div>
+                <Button onClick={this.handleNewGame}>
                     New Game
-                </Button>);
+                </Button>
+                <Button onClick={this.loadGame}>
+                    Load Last game
+                </Button>
+            </div>);
 
         if (this.state.gameStarted && this.state.checkmate < 1) {
             button = (<Button bsStyle="danger" onClick={this.handleSurrender}>
@@ -904,9 +967,6 @@ var Piece = React.createClass({
         this.setInterval(this.update, 2000);
     },
     render: function() {
-
-        console.log(window.innerWidth);
-
         var screenWidth = window.innerWidth;
         var screenHeight = window.innerHeight;
 

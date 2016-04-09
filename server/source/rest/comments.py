@@ -147,12 +147,72 @@ def post_move():
     return models.move_response_to_json(move, oldBoard[0].board, oldBoard[0].loser, checkLocs)
 
 
+@post('/updateAlias')
+def update_alias():
+    alias = request.json.get('alias')
+    user = users.get_current_user()
+    id = user.user_id()
+
+    userModel = models.User.query().filter(models.User.userID == id).fetch(1)
+
+    if len(userModel) == 0 or userModel[0] is None:
+        user = models.User(userID=id, alias=alias)
+        user.put()
+    else:
+        userModel.alias = alias
+        userModel.put()
+
+    response.content_type = 'application/json'
+    return {
+        '': ''
+    }
+
+
+@post('/getLastGame')
+def get_last_game():
+    user = users.get_current_user()
+    id = user.user_id()
+
+    last_game = models.Gameboard.query().filter(models.Gameboard.whiteId == id).order(-models.Gameboard.gameID).fetch(1)
+    ourTeam = True
+
+    if last_game is None or len(last_game) == 0:
+        last_game = models.Gameboard.query().filter(models.Gameboard.blackId == id).order(-models.Gameboard.gameID).fetch(1)
+        ourTeam = False
+
+    response.content_type = 'application/json'
+    if last_game is None or len(last_game) == 0:
+        return {
+            'no_game': True
+        }
+    else:
+        return models.get_last_game_to_json(last_game[0], ourTeam)
+
+
+@post('/createUser')
+def create_user():
+    user = users.get_current_user()
+    id = user.user_id()
+
+    userModel = models.User.query().filter(models.User.userID == id).fetch(1)
+
+    if len(userModel) == 0 or userModel[0] is None:
+        user = models.User(userID=id)
+        user.put()
+
+    response.content_type = 'application/json'
+    return {
+        '': ''
+    }
+
 @post('/newgame')
 def new_game():
     oldBoard = models.Gameboard.query().order(-models.Gameboard.gameID).fetch(1)
 
     if len(oldBoard) > 0 and not oldBoard[0].hasStarted:
         oldBoard[0].hasStarted = True
+        user = users.get_current_user()
+        oldBoard[0].blackId=user.user_id()
         oldBoard[0].put()
         response.content_type = 'application/json'
         return models.new_game_to_json('black', oldBoard[0].gameID)
@@ -162,11 +222,13 @@ def new_game():
         if len(oldBoard) == 1:
             id = oldBoard[0].gameID+1
 
+        user = users.get_current_user()
         board = models.Gameboard(isWhite=True,
                                  board=GameEngine.getInitialState(),
                                  gameID=id,
                                  hasStarted=False,
-                                 lastMove=0
+                                 lastMove=0,
+                                 whiteId=user.user_id()
         )
 
         board.put()
