@@ -4,6 +4,7 @@ var marked = require('marked');
 var urls = require('./urls');
 
 var Button = require('react-bootstrap').Button;
+var Well = require('react-bootstrap').Well;
 
 var GamePage = React.createClass({
     propTypes: {
@@ -375,7 +376,7 @@ var GamePage = React.createClass({
         console.log('waiting: ' + this.state.waiting);
 
         var divStyle = {
-            'height': '1000px'
+            'height': '2000px'
         };
 
         var waiting = (<div></div>);
@@ -414,7 +415,7 @@ var GamePage = React.createClass({
                     New Game
                 </Button>);
 
-        if (this.state.gameStarted && this.state.checkmate == 0) {
+        if (this.state.gameStarted && this.state.checkmate < 1) {
             button = (<Button bsStyle="danger" onClick={this.handleSurrender}>
                     Surrender
                 </Button>);
@@ -568,9 +569,174 @@ var GamePage = React.createClass({
                 <Piece piece={this.state.pieces[7][5]} xLoc={5} yLoc={7} selected={this.state.selected == 62} lastMove={this.state.lastMove == 62} killedLoc={this.state.killedLoc == 62} pawnKillLoc={this.pawnKillLoc(62)} checkLocs={this.inCheckLocs(62)} onClick={this.handlePieceClicked} />
                 <Piece piece={this.state.pieces[7][6]} xLoc={6} yLoc={7} selected={this.state.selected == 63} lastMove={this.state.lastMove == 63} killedLoc={this.state.killedLoc == 63} pawnKillLoc={this.pawnKillLoc(63)} checkLocs={this.inCheckLocs(63)} onClick={this.handlePieceClicked} />
                 <Piece piece={this.state.pieces[7][7]} xLoc={7} yLoc={7} selected={this.state.selected == 64} lastMove={this.state.lastMove == 64} killedLoc={this.state.killedLoc == 64} pawnKillLoc={this.pawnKillLoc(64)} checkLocs={this.inCheckLocs(64)} onClick={this.handlePieceClicked} />
+
+                <br /> <br />
+
+                <PiecesTaken board={this.state.board} ourTeam={this.state.ourTeam} moves={this.state.moves} />
+
             </div>
         );
     }
+});
+
+var PiecesTaken = React.createClass({
+    propTypes: {
+        board: React.PropTypes.array.isRequired,
+        ourTeam: React.PropTypes.bool.isRequired,
+        moves: React.PropTypes.number.isRequired,
+    },
+   render: function() {
+       if (this.props.moves < 2) {
+           return (<div></div>);
+       }
+
+       var team = 'black';
+       var index = 16;
+
+       if (!this.props.ourTeam) {
+           index = 0;
+           team = 'white';
+       }
+
+       var imageStyle = {
+           width: '80px',
+           height: '80px'
+       };
+
+       var king;
+
+       if (this.props.board[index] == 0) {
+           king = (<img src={'/static/images/chessPieces/' + team + 'King.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var queen;
+
+       if (this.props.board[index] == 0) {
+           queen = (<img src={'/static/images/chessPieces/' + team +'Queen.png'} style={imageStyle} />);
+       }
+
+       index++;
+
+       var rook1;
+       if (this.props.board[index] == 0) {
+           rook1 = (<img src={'/static/images/chessPieces/' + team +'Rook.png'} style={imageStyle} />);
+       }
+
+       index++;
+
+       var rook2;
+
+       if (this.props.board[index] == 0) {
+           rook2 = (<img src={'/static/images/chessPieces/' + team +'Rook.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var knight1;
+       if (this.props.board[index] == 0) {
+           knight1 = (<img src={'/static/images/chessPieces/' + team +'Knight.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var knight2;
+
+       if (this.props.board[index] == 0) {
+           knight2 = (<img src={'/static/images/chessPieces/' + team +'Knight.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var bishop1;
+
+       if (this.props.board[index] == 0) {
+           bishop1 = (<img src={'/static/images/chessPieces/' + team +'Bishop.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var bishop2;
+
+       if (this.props.board[index] == 0) {
+           bishop2 = (<img src={'/static/images/chessPieces/' + team +'Bishop.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn1;
+
+       if (this.props.board[index] == 0) {
+           pawn1 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn2;
+
+       if (this.props.board[index] == 0) {
+           pawn2 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn3;
+
+       if (this.props.board[index] == 0) {
+           pawn3 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn4;
+
+       if (this.props.board[index] == 0) {
+           pawn4 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn5;
+
+       if (this.props.board[index] == 0) {
+           pawn5 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn6;
+
+       if (this.props.board[index] == 0) {
+           pawn6 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn7;
+
+       if (this.props.board[index] == 0) {
+           pawn7 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+       index++;
+       var pawn8;
+
+       if (this.props.board[index] == 0) {
+           pawn8 = (<img src={'/static/images/chessPieces/' + team +'Pawn.png'} style={imageStyle} />);
+       }
+
+      return (
+          <Well>
+              <h3>
+                  Captured Pieces:
+              </h3>
+              {king}
+              {queen}
+              {rook1}
+              {rook2}
+              {knight1}
+              {knight2}
+              {bishop1}
+              {bishop2}
+              {pawn1}
+              {pawn2}
+              {pawn3}
+              {pawn4}
+              {pawn5}
+              {pawn6}
+              {pawn7}
+              {pawn8}
+          </Well>);
+   },
 });
 
 var SetIntervalMixin = {
