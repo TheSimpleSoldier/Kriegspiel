@@ -65,10 +65,20 @@ def post_move():
 
 @post('/newgame')
 def new_game():
-    board = models.Gameboard(True,
-                             GameEngine.getInitialState())
+    oldBoard = models.Gameboard.query().order(-models.Gameboard.gameID).fetch(1)
+    id = 0
+
+    if len(oldBoard) == 1:
+        id = oldBoard[0].gameID+1
+
+    board = models.Gameboard(isWhite=True,
+                             board=GameEngine.getInitialState(),
+                             gameID=id
+    )
+
+    board.put()
     response.content_type = 'application/json'
-    return models.new_game_to_json('white')
+    return models.new_game_to_json('white', board.gameID)
 
 @post('/comment')
 def create_new_comment():

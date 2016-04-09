@@ -9,7 +9,7 @@ class Comment(ndb.Model):
     author = ndb.StringProperty()
 
 class Gameboard(ndb.Model):
-    # gameID = ndb.IntegerProperty()
+    gameID = ndb.IntegerProperty()
     isWhite = ndb.BooleanProperty()
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     board = ndb.JsonProperty()
@@ -27,9 +27,10 @@ def move_response_to_json(move):
         'move': move
     }
 
-def new_game_to_json(team):
+def new_game_to_json(team, id):
     return {
-        'team': team
+        'team': team,
+        'id': id
     }
 
 def opponent_joined_to_json(joined):
