@@ -7,7 +7,8 @@ Backbone.$ = $;
 var Well = require('react-bootstrap').Well;
 
 var MainNav = require('./MainNav');
-var CommentList = require('./CommentList')
+var CommentList = require('./CommentList');
+var GamePage = require('./GamePage');
 
 
 var InterfaceComponent = React.createClass({
@@ -32,21 +33,13 @@ var InterfaceComponent = React.createClass({
                 </Well>
             );
         }
-        if (this.props.router.current[0] == 'notes') {
+        if (this.props.router.current[0] == 'game') {
             nav = 2;
             content = (
                 <Well>
-                    <CommentList />
+                    <GamePage />
                 </Well>
-            );
-        }
-        if (this.props.router.current[0] == 'todos') {
-            nav = 3;
-            content = (
-                <Well>
-                    <p>TODO: replace with todos react tutorial</p>
-                </Well>
-            );
+            )
         }
         return (
             <div className="content">

@@ -1,5 +1,6 @@
 module.exports = {
     GET: {
+        move: '/move',
         allComments: '/comments/'
     },
     POST: {
