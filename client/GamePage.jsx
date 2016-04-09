@@ -48,7 +48,7 @@ var GamePage = React.createClass({
                     if (data >= 3) {
                         this.movePiece(x, y);
                     }
-                    
+
                 }.bind(this),
                 error: function(xhr, status, err) {
                     console.error(urls.POST.newComment, status, err.toString());
@@ -72,9 +72,12 @@ var GamePage = React.createClass({
     handlePieceClicked: function(x, y) {
         console.log("x: " + x + ", y: " + y);
 
+        var spot = x+y*8+1;
+
         // if a spot hasn't been picked
-        if (this.state.selected == 0) {
-            var spot = x+y*8+1;
+        if (spot == this.state.selected) {
+            this.setState({selected: 0});
+        } else if (this.state.selected == 0) {
             console.log("selecting a piece: " + spot);
             var loc = this.state.pieces[y][x];
 
