@@ -3,8 +3,14 @@ var marked = require('marked');
 
 var urls = require('./urls');
 
+var Input = require('react-bootstrap').Input;
+
 var UserInfo = React.createClass({
     propTypes: {
+    },
+    onNickNameChange: function(event) {
+        console.log(event);
+        console.log(this.refs.nickname.getValue());
     },
     render: function() {
         return (
@@ -12,6 +18,8 @@ var UserInfo = React.createClass({
                 <h2>
                     User Profile
                 </h2>
+
+                <Input ref="nickname" type="text" placeholder="Add Nickname" onChange={this.onNickNameChange} />
             </div>
         );
     }
