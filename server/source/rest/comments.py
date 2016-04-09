@@ -8,6 +8,26 @@ from google.appengine.api import users
 import models
 import GameEngine
 
+@post('/login')
+def login():
+    userID = request.json.get('userID')
+    userInfo = models.User.query().filter(models.User.userID == userID).fetch(1)
+    return models.login_to_json(userInfo[0])
+
+@post('/updateUser')
+def updateUser():
+    userID = request.json.get('userID')
+    userInfo = models.User.query().filter(models.User.userID == userID).fetch(1)
+    userInfo[0]['alias'] = request.json.get('alias')
+    userInfo[0]['spriteURL'] = request.json.get('spriteURL')
+    userInfo[0]['games'] = request.json.get('games')
+    userInfo[0]['kingURL'] = request.json.get('kingURL')
+    userInfo[0]['queenURL'] = request.json.get('queenURL')
+    userInfo[0]['rookURL'] = request.json.get('rookURL')
+    userInfo[0]['bishopURL'] = request.json.get('bishopURL')
+    userInfo[0]['knightURL'] = request.json.get('knightURL')
+    userInfo[0]['pawnURL'] = request.json.get('pawnURL')
+    userInfo[0].put()
 
 @get('/comments/')
 def get_all_comments():
