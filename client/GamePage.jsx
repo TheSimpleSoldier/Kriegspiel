@@ -82,6 +82,7 @@ var GamePage = React.createClass({
                         this.setState({checkmate: data['checkmate']});
                         this.setState({checkLocs: []});
                         this.setState({enemyCheckLocs: data['checkLocs']});
+                        this.setState({promotions: data['promotions']});
                     }
 
                     this.setState({'unitKilled': ""});

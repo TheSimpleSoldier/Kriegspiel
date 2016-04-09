@@ -53,12 +53,13 @@ def comment_to_json(comment):
         'author': comment.author
     }
 
-def move_response_to_json(move, board, checkmate, checkLocs):
+def move_response_to_json(move, board, checkmate, checkLocs, promotions):
     return {
         'move': move,
         'board': board,
         'checkmate': checkmate,
-        'checkLocs': checkLocs
+        'checkLocs': checkLocs,
+        'promotions': promotions
     }
 
 def new_game_to_json(team, id):
