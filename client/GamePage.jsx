@@ -590,12 +590,12 @@ var PiecesTaken = React.createClass({
            return (<div></div>);
        }
 
-       var team = 'white';
-       var index = 0;
+       var team = 'black';
+       var index = 16;
 
        if (!this.props.ourTeam) {
-           index = 16;
-           team = 'black'
+           index = 0;
+           team = 'white';
        }
 
        var imageStyle = {
@@ -716,6 +716,9 @@ var PiecesTaken = React.createClass({
 
       return (
           <Well>
+              <h3>
+                  Captured Pieces:
+              </h3>
               {king}
               {queen}
               {rook1}
