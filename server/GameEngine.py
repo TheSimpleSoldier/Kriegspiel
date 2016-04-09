@@ -330,9 +330,9 @@ def inCheck(positions, white):
         loc = 16
         start = 1
     
-    for k in range(0, 15):
+    for k in range(0, 14):
         if(positions[start + k] != 0):
-            if(isValidMove(positions, white, positions[start + k], positions[loc])):
+            if(isValidMove(positions, not white, positions[start + k], positions[loc]) >= 3):
                 return True
 
     for k in range(-1,1):
@@ -356,7 +356,7 @@ def inCheckMate(positions, white):
     for k in range(0, 15):
         if(positions[start + k] != 0):
             for a in range(1,64):
-                if(isValidMove(positions, white, positions[start + k], a)):
+                if(isValidMove(positions, white, positions[start + k], a) >= 3):
                     tempPositions = list(positions)
                     if(checkPos(tempPositions, a, white) != -1 and checkPos(tempPositions, a, white) != -3):
                         tempPositions[checkPos(tempPositions, a, white)] = 0

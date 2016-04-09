@@ -56,3 +56,11 @@ check3State[0] = 1
 check3State[2] = 12
 check3State[18] = 4
 print str(inCheckMate(check3State, True)) + " = False"
+print "check"
+checkState = [0] * 32
+checkState[0] = 1
+checkState[18] = 4
+checkState[2] =16 
+print str(isValidMove(checkState, True, 16, 8)) + " = 2"
+checkState[1] = 2
+print str(isValidMove(checkState, True, 16, 8)) + " = 3"
