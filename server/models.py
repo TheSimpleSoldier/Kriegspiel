@@ -46,3 +46,8 @@ def opponent_moved_to_json(moved, board):
         'moved': moved,
         'board': board
     }
+
+def board_to_json(board):
+    return {
+        'board': board
+    }
