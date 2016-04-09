@@ -68,7 +68,6 @@ def opponent_moved():
         return models.opponent_moved_to_json('1', oldBoard[0].board)
 
 
-
 @post('/move')
 def post_move():
     start = request.json.get('start')
@@ -93,16 +92,11 @@ def post_move():
     logging.info(end)
     logging.info(game_id)
 
-
     if move >= 3:
         oldBoard[0].lastMove = end
         oldBoard[0].isWhite = not is_white
         if move >= 4:
             positions[move - 4] = 0
-            move = end
-            for loc in range(0, 32):
-                if positions[loc] == end:
-                    move = loc
 
         for loc in range(0, 32):
             if positions[loc] == start:
@@ -142,6 +136,17 @@ def new_game():
         board.put()
         response.content_type = 'application/json'
         return models.new_game_to_json('white', board.gameID)
+
+
+@post('/boardUpdate')
+def update_board():
+    game_id = request.json.get('gameId')
+
+    oldBoard = models.Gameboard.query().filter(models.Gameboard.gameID == game_id).fetch(1)
+
+    response.content_type = 'application/json'
+    return models.board_to_json(oldBoard[0].board)
+
 
 @post('/comment')
 def create_new_comment():

@@ -13,6 +13,7 @@ var GamePage = React.createClass({
             moveToX: 0,
             moveToY: 0,
             selected: 0,
+            lastMove: 0,
             isWhite: true,
             gameStarted: false,
             waiting: false,
@@ -20,6 +21,7 @@ var GamePage = React.createClass({
             ourTeam: true,
             moves: 0,
             unitKilled: "",
+            killedLoc: 0,
             pieces: [
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
@@ -29,8 +31,18 @@ var GamePage = React.createClass({
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
-            ]
+            ],
+            board: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         };
+    },
+
+    shouldUpdateBoard: function(board) {
+        for (var i = 0; i < board.length; i++) {
+            if (board[i] != this.state.board[i]) {
+                return true;
+            }
+        }
+        return false;
     },
 
     checkIfMoveValid: function(x, y) {
@@ -48,24 +60,23 @@ var GamePage = React.createClass({
                 type: 'POST',
                 data: JSON.stringify(data),
                 success: function(data) {
-                    console.log(data);
                     this.setState({'moveToX': x, 'moveToY': y});
                     var newData = data['move'];
 
                     if (newData >= 3) {
                         this.setState({moves: this.state.moves+1});
-                        console.log('board: ' + data['board']);
+                        this.setState({lastMove: (x + 8 * y + 1)});
                         this.updateGameState(data['board']);
                         this.setState({selected: 0});
                         this.setState({isWhite: !this.state.isWhite});
+                        this.setState({killedLoc: 0});
                     }
 
                     this.setState({'unitKilled': ""});
 
                     if (newData > 3) {
                         this.setState({});
-                        this.setState({'unitKilled': this.unitKilled(newData)});
-                        console.log("killed: " + (newData - 4));
+                        this.setState({'unitKilled': this.unitKilled(newData - 4)});
                     }
 
                 }.bind(this),
@@ -77,7 +88,7 @@ var GamePage = React.createClass({
 
     handlePieceClicked: function(x, y) {
         if (!this.state.gameStarted) {
-            console.log("game has not startd");
+            console.log("game has not started");
             return;
         } else if (this.state.isWhite != this.state.ourTeam) {
             console.log("you cann't move for the other team!");
@@ -92,7 +103,6 @@ var GamePage = React.createClass({
         if (spot == this.state.selected) {
             this.setState({selected: 0});
         } else if (this.state.selected == 0) {
-            console.log("selecting a piece: " + spot);
             var loc = this.state.pieces[y][x];
 
             if (this.state.isWhite) {
@@ -126,8 +136,6 @@ var GamePage = React.createClass({
             contentType: 'application/json; charset=utf-8',
             type: 'POST',
             success: function(data) {
-                console.log(data);
-
                 if (data['team'] == 'white') {
                     console.log('we are white');
                     this.setState({'waiting': true, 'gameStarted': false, 'ourTeam': true});
@@ -200,21 +208,39 @@ var GamePage = React.createClass({
         this.setState({ 'pieces': positions });
     },
 
+    isPosInBoard: function(board, pos) {
+        for (var i = 0; i < 32; i++) {
+            if (board[i] == pos) {
+                return true;
+            }
+        }
+        return false;
+    },
+
     /*
     [wK, wQ, wR1, wR2, wKn1, wKn2, wB1, wB2, wP1, wP2, wP3, wP4, wP5, wP6, wP7, wP8,
     bK, bQ, bR1, bR2, bKn1, bKn2, bB1, bB2, bP1, bP2, bP3, bP4, bP5, bP6, bP7, bP8]
      */
     updateGameState: function(board) {
-        if (board == undefined || board.length < 32 || this.state.moves == 0) {
+        if (board == undefined || board.length < 32 || this.state.moves == 0 || !this.shouldUpdateBoard(board)) {
             return;
         }
 
-        this.clearBoard();
+        for (var i = 0; i < this.state.board.length; i++) {
+            // if a piece was killed
+            if (this.state.board[i] > 0 && board[i] == 0) {
+                this.setState({killedLoc: this.state.board[i]});
+            }
+        }
+
+        this.setState({'board': board});
 
         var places = ["whiteKing.png", "whiteQueen.png", "whiteRook.png", "whiteRook.png", "whiteKnight.png", "whiteKnight.png", "whiteBishop.png", "whiteBishop.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png",
                       "blackKing.png", "blackQueen.png", "blackRook.png", "blackRook.png", "blackKnight.png", "blackKnight.png", "blackBishop.png",  "blackBishop.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"];
         var x, y;
         var positions = this.state.pieces;
+
+        this.clearBoard();
 
         if (this.state.ourTeam) {
             for (var i = 0; i < 16; i++) {
@@ -240,14 +266,12 @@ var GamePage = React.createClass({
     },
 
     opponentMoved: function(board) {
-        console.log("opponentMoved board: " + board);
         this.updateGameState(board);
 
         this.setState({'isWhite': !this.state.isWhite});
     },
 
     render: function() {
-
         console.log('waiting: ' + this.state.waiting);
 
         var divStyle = {
@@ -258,6 +282,7 @@ var GamePage = React.createClass({
         var opponentMoved = (<div></div>);
         var msg = (<div></div>);
         var killedOpponent = (<div></div>);
+        var updateBoard = (<div></div>);
 
         if (this.state.unitKilled != "") {
             killedOpponent = (<div>
@@ -269,6 +294,10 @@ var GamePage = React.createClass({
             opponentMoved = (
                 <OpponentMoved pollInterval={1000} callBack={this.opponentMoved} gameId={this.state.gameId} ourTeam={this.state.ourTeam} />
             )
+        }
+
+        if (this.state.gameStarted) {
+            updateBoard = (<boardUpdated pollInterval={250} callBack={this.updateGameState} gameId={this.state.gameId} />)
         }
 
         console.log('gameStarted: ' + this.state.gameStarted);
@@ -286,6 +315,7 @@ var GamePage = React.createClass({
             <div style={divStyle} >
                 {waiting}
                 {opponentMoved}
+                {updateBoard}
                 <h2>
                     Kriegspiel
                 </h2>
@@ -299,91 +329,91 @@ var GamePage = React.createClass({
 
                 <br /> <br />
 
-                <Piece piece={this.state.pieces[0][0]} xLoc={0} yLoc={0} selected={this.state.selected == 1} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[0][1]} xLoc={1} yLoc={0} selected={this.state.selected == 2} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[0][2]} xLoc={2} yLoc={0} selected={this.state.selected == 3} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[0][3]} xLoc={3} yLoc={0} selected={this.state.selected == 4} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[0][4]} xLoc={4} yLoc={0} selected={this.state.selected == 5} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[0][5]} xLoc={5} yLoc={0} selected={this.state.selected == 6} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[0][6]} xLoc={6} yLoc={0} selected={this.state.selected == 7} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[0][7]} xLoc={7} yLoc={0} selected={this.state.selected == 8} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][0]} xLoc={0} yLoc={0} selected={this.state.selected == 1} lastMove={this.state.lastMove == 1} killedLoc={this.state.killedLoc == 1} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][1]} xLoc={1} yLoc={0} selected={this.state.selected == 2} lastMove={this.state.lastMove == 2} killedLoc={this.state.killedLoc == 2} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][2]} xLoc={2} yLoc={0} selected={this.state.selected == 3} lastMove={this.state.lastMove == 3} killedLoc={this.state.killedLoc == 3} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][3]} xLoc={3} yLoc={0} selected={this.state.selected == 4} lastMove={this.state.lastMove == 4} killedLoc={this.state.killedLoc == 4} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][4]} xLoc={4} yLoc={0} selected={this.state.selected == 5} lastMove={this.state.lastMove == 5} killedLoc={this.state.killedLoc == 5} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][5]} xLoc={5} yLoc={0} selected={this.state.selected == 6} lastMove={this.state.lastMove == 6} killedLoc={this.state.killedLoc == 6} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][6]} xLoc={6} yLoc={0} selected={this.state.selected == 7} lastMove={this.state.lastMove == 7} killedLoc={this.state.killedLoc == 7} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[0][7]} xLoc={7} yLoc={0} selected={this.state.selected == 8} lastMove={this.state.lastMove == 8} killedLoc={this.state.killedLoc == 8} onClick={this.handlePieceClicked} />
 
                 <br /> <br /> <br /> <br /> <br /> <br />
 
-                <Piece piece={this.state.pieces[1][0]} xLoc={0} yLoc={1} selected={this.state.selected == 9} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[1][1]} xLoc={1} yLoc={1} selected={this.state.selected == 10} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[1][2]} xLoc={2} yLoc={1} selected={this.state.selected == 11} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[1][3]} xLoc={3} yLoc={1} selected={this.state.selected == 12} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[1][4]} xLoc={4} yLoc={1} selected={this.state.selected == 13} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[1][5]} xLoc={5} yLoc={1} selected={this.state.selected == 14} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[1][6]} xLoc={6} yLoc={1} selected={this.state.selected == 15} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[1][7]} xLoc={7} yLoc={1} selected={this.state.selected == 16} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][0]} xLoc={0} yLoc={1} selected={this.state.selected == 9} lastMove={this.state.lastMove == 9} killedLoc={this.state.killedLoc == 9} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][1]} xLoc={1} yLoc={1} selected={this.state.selected == 10} lastMove={this.state.lastMove == 10} killedLoc={this.state.killedLoc == 10} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][2]} xLoc={2} yLoc={1} selected={this.state.selected == 11} lastMove={this.state.lastMove == 11} killedLoc={this.state.killedLoc == 11} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][3]} xLoc={3} yLoc={1} selected={this.state.selected == 12} lastMove={this.state.lastMove == 12} killedLoc={this.state.killedLoc == 12} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][4]} xLoc={4} yLoc={1} selected={this.state.selected == 13} lastMove={this.state.lastMove == 13} killedLoc={this.state.killedLoc == 13} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][5]} xLoc={5} yLoc={1} selected={this.state.selected == 14} lastMove={this.state.lastMove == 14} killedLoc={this.state.killedLoc == 14} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][6]} xLoc={6} yLoc={1} selected={this.state.selected == 15} lastMove={this.state.lastMove == 15} killedLoc={this.state.killedLoc == 15} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[1][7]} xLoc={7} yLoc={1} selected={this.state.selected == 16} lastMove={this.state.lastMove == 16} killedLoc={this.state.killedLoc == 16} onClick={this.handlePieceClicked} />
 
                 <br /> <br /> <br /> <br /> <br /> <br />
 
-                <Piece piece={this.state.pieces[2][0]} xLoc={0} yLoc={2} selected={this.state.selected == 17} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[2][1]} xLoc={1} yLoc={2} selected={this.state.selected == 18} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[2][2]} xLoc={2} yLoc={2} selected={this.state.selected == 19} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[2][3]} xLoc={3} yLoc={2} selected={this.state.selected == 20} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[2][4]} xLoc={4} yLoc={2} selected={this.state.selected == 21} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[2][5]} xLoc={5} yLoc={2} selected={this.state.selected == 22} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[2][6]} xLoc={6} yLoc={2} selected={this.state.selected == 23} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[2][7]} xLoc={7} yLoc={2} selected={this.state.selected == 24} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][0]} xLoc={0} yLoc={2} selected={this.state.selected == 17} lastMove={this.state.lastMove == 17} killedLoc={this.state.killedLoc == 17} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][1]} xLoc={1} yLoc={2} selected={this.state.selected == 18} lastMove={this.state.lastMove == 18} killedLoc={this.state.killedLoc == 18} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][2]} xLoc={2} yLoc={2} selected={this.state.selected == 19} lastMove={this.state.lastMove == 19} killedLoc={this.state.killedLoc == 19} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][3]} xLoc={3} yLoc={2} selected={this.state.selected == 20} lastMove={this.state.lastMove == 20} killedLoc={this.state.killedLoc == 20} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][4]} xLoc={4} yLoc={2} selected={this.state.selected == 21} lastMove={this.state.lastMove == 21} killedLoc={this.state.killedLoc == 21} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][5]} xLoc={5} yLoc={2} selected={this.state.selected == 22} lastMove={this.state.lastMove == 22} killedLoc={this.state.killedLoc == 22} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][6]} xLoc={6} yLoc={2} selected={this.state.selected == 23} lastMove={this.state.lastMove == 23} killedLoc={this.state.killedLoc == 23} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[2][7]} xLoc={7} yLoc={2} selected={this.state.selected == 24} lastMove={this.state.lastMove == 24} killedLoc={this.state.killedLoc == 24} onClick={this.handlePieceClicked} />
 
                 <br /> <br /> <br /> <br /> <br /> <br />
 
-                <Piece piece={this.state.pieces[3][0]} xLoc={0} yLoc={3} selected={this.state.selected == 25} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[3][1]} xLoc={1} yLoc={3} selected={this.state.selected == 26} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[3][2]} xLoc={2} yLoc={3} selected={this.state.selected == 27} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[3][3]} xLoc={3} yLoc={3} selected={this.state.selected == 28} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[3][4]} xLoc={4} yLoc={3} selected={this.state.selected == 29} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[3][5]} xLoc={5} yLoc={3} selected={this.state.selected == 30} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[3][6]} xLoc={6} yLoc={3} selected={this.state.selected == 31} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[3][7]} xLoc={7} yLoc={3} selected={this.state.selected == 32} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][0]} xLoc={0} yLoc={3} selected={this.state.selected == 25} lastMove={this.state.lastMove == 25} killedLoc={this.state.killedLoc == 25} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][1]} xLoc={1} yLoc={3} selected={this.state.selected == 26} lastMove={this.state.lastMove == 26} killedLoc={this.state.killedLoc == 26} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][2]} xLoc={2} yLoc={3} selected={this.state.selected == 27} lastMove={this.state.lastMove == 27} killedLoc={this.state.killedLoc == 27} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][3]} xLoc={3} yLoc={3} selected={this.state.selected == 28} lastMove={this.state.lastMove == 28} killedLoc={this.state.killedLoc == 28} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][4]} xLoc={4} yLoc={3} selected={this.state.selected == 29} lastMove={this.state.lastMove == 29} killedLoc={this.state.killedLoc == 29} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][5]} xLoc={5} yLoc={3} selected={this.state.selected == 30} lastMove={this.state.lastMove == 30} killedLoc={this.state.killedLoc == 30} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][6]} xLoc={6} yLoc={3} selected={this.state.selected == 31} lastMove={this.state.lastMove == 31} killedLoc={this.state.killedLoc == 31} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[3][7]} xLoc={7} yLoc={3} selected={this.state.selected == 32} lastMove={this.state.lastMove == 32} killedLoc={this.state.killedLoc == 32} onClick={this.handlePieceClicked} />
 
                 <br /> <br /> <br /> <br /> <br /> <br />
 
-                <Piece piece={this.state.pieces[4][0]} xLoc={0} yLoc={4} selected={this.state.selected == 33} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[4][1]} xLoc={1} yLoc={4} selected={this.state.selected == 34} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[4][2]} xLoc={2} yLoc={4} selected={this.state.selected == 35} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[4][3]} xLoc={3} yLoc={4} selected={this.state.selected == 36} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[4][4]} xLoc={4} yLoc={4} selected={this.state.selected == 37} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[4][5]} xLoc={5} yLoc={4} selected={this.state.selected == 38} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[4][6]} xLoc={6} yLoc={4} selected={this.state.selected == 39} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[4][7]} xLoc={7} yLoc={4} selected={this.state.selected == 40} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][0]} xLoc={0} yLoc={4} selected={this.state.selected == 33} lastMove={this.state.lastMove == 33} killedLoc={this.state.killedLoc == 33} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][1]} xLoc={1} yLoc={4} selected={this.state.selected == 34} lastMove={this.state.lastMove == 34} killedLoc={this.state.killedLoc == 34} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][2]} xLoc={2} yLoc={4} selected={this.state.selected == 35} lastMove={this.state.lastMove == 35} killedLoc={this.state.killedLoc == 335} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][3]} xLoc={3} yLoc={4} selected={this.state.selected == 36} lastMove={this.state.lastMove == 36} killedLoc={this.state.killedLoc == 36} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][4]} xLoc={4} yLoc={4} selected={this.state.selected == 37} lastMove={this.state.lastMove == 37} killedLoc={this.state.killedLoc == 37} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][5]} xLoc={5} yLoc={4} selected={this.state.selected == 38} lastMove={this.state.lastMove == 38} killedLoc={this.state.killedLoc == 38} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][6]} xLoc={6} yLoc={4} selected={this.state.selected == 39} lastMove={this.state.lastMove == 39} killedLoc={this.state.killedLoc == 39} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[4][7]} xLoc={7} yLoc={4} selected={this.state.selected == 40} lastMove={this.state.lastMove == 40} killedLoc={this.state.killedLoc == 40} onClick={this.handlePieceClicked} />
 
                 <br /> <br /> <br /> <br /> <br /> <br />
 
-                <Piece piece={this.state.pieces[5][0]} xLoc={0} yLoc={5} selected={this.state.selected == 41} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[5][1]} xLoc={1} yLoc={5} selected={this.state.selected == 42} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[5][2]} xLoc={2} yLoc={5} selected={this.state.selected == 43} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[5][3]} xLoc={3} yLoc={5} selected={this.state.selected == 44} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[5][4]} xLoc={4} yLoc={5} selected={this.state.selected == 45} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[5][5]} xLoc={5} yLoc={5} selected={this.state.selected == 46} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[5][6]} xLoc={6} yLoc={5} selected={this.state.selected == 47} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[5][7]} xLoc={7} yLoc={5} selected={this.state.selected == 48} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][0]} xLoc={0} yLoc={5} selected={this.state.selected == 41} lastMove={this.state.lastMove == 41} killedLoc={this.state.killedLoc == 41} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][1]} xLoc={1} yLoc={5} selected={this.state.selected == 42} lastMove={this.state.lastMove == 42} killedLoc={this.state.killedLoc == 42} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][2]} xLoc={2} yLoc={5} selected={this.state.selected == 43} lastMove={this.state.lastMove == 43} killedLoc={this.state.killedLoc == 43} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][3]} xLoc={3} yLoc={5} selected={this.state.selected == 44} lastMove={this.state.lastMove == 44} killedLoc={this.state.killedLoc == 44} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][4]} xLoc={4} yLoc={5} selected={this.state.selected == 45} lastMove={this.state.lastMove == 45} killedLoc={this.state.killedLoc == 45} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][5]} xLoc={5} yLoc={5} selected={this.state.selected == 46} lastMove={this.state.lastMove == 46} killedLoc={this.state.killedLoc == 46} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][6]} xLoc={6} yLoc={5} selected={this.state.selected == 47} lastMove={this.state.lastMove == 47} killedLoc={this.state.killedLoc == 47} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[5][7]} xLoc={7} yLoc={5} selected={this.state.selected == 48} lastMove={this.state.lastMove == 48} killedLoc={this.state.killedLoc == 48} onClick={this.handlePieceClicked} />
 
                 <br /> <br /> <br /> <br /> <br /> <br />
 
-                <Piece piece={this.state.pieces[6][0]} xLoc={0} yLoc={6} selected={this.state.selected == 49} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[6][1]} xLoc={1} yLoc={6} selected={this.state.selected == 50} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[6][2]} xLoc={2} yLoc={6} selected={this.state.selected == 51} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[6][3]} xLoc={3} yLoc={6} selected={this.state.selected == 52} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[6][4]} xLoc={4} yLoc={6} selected={this.state.selected == 53} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[6][5]} xLoc={5} yLoc={6} selected={this.state.selected == 54} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[6][6]} xLoc={6} yLoc={6} selected={this.state.selected == 55} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[6][7]} xLoc={7} yLoc={6} selected={this.state.selected == 56} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][0]} xLoc={0} yLoc={6} selected={this.state.selected == 49} lastMove={this.state.lastMove == 49} killedLoc={this.state.killedLoc == 49} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][1]} xLoc={1} yLoc={6} selected={this.state.selected == 50} lastMove={this.state.lastMove == 50} killedLoc={this.state.killedLoc == 50} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][2]} xLoc={2} yLoc={6} selected={this.state.selected == 51} lastMove={this.state.lastMove == 51} killedLoc={this.state.killedLoc == 51} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][3]} xLoc={3} yLoc={6} selected={this.state.selected == 52} lastMove={this.state.lastMove == 52} killedLoc={this.state.killedLoc == 52} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][4]} xLoc={4} yLoc={6} selected={this.state.selected == 53} lastMove={this.state.lastMove == 53} killedLoc={this.state.killedLoc == 53} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][5]} xLoc={5} yLoc={6} selected={this.state.selected == 54} lastMove={this.state.lastMove == 54} killedLoc={this.state.killedLoc == 54} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][6]} xLoc={6} yLoc={6} selected={this.state.selected == 55} lastMove={this.state.lastMove == 55} killedLoc={this.state.killedLoc == 55} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[6][7]} xLoc={7} yLoc={6} selected={this.state.selected == 56} lastMove={this.state.lastMove == 56} killedLoc={this.state.killedLoc == 56} onClick={this.handlePieceClicked} />
 
                 <br /> <br /> <br /> <br /> <br /> <br />
 
-                <Piece piece={this.state.pieces[7][0]} xLoc={0} yLoc={7} selected={this.state.selected == 57} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[7][1]} xLoc={1} yLoc={7} selected={this.state.selected == 58} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[7][2]} xLoc={2} yLoc={7} selected={this.state.selected == 59} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[7][3]} xLoc={3} yLoc={7} selected={this.state.selected == 60} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[7][4]} xLoc={4} yLoc={7} selected={this.state.selected == 61} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[7][5]} xLoc={5} yLoc={7} selected={this.state.selected == 62} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[7][6]} xLoc={6} yLoc={7} selected={this.state.selected == 63} onClick={this.handlePieceClicked} />
-                <Piece piece={this.state.pieces[7][7]} xLoc={7} yLoc={7} selected={this.state.selected == 64} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][0]} xLoc={0} yLoc={7} selected={this.state.selected == 57} lastMove={this.state.lastMove == 57} killedLoc={this.state.killedLoc == 57} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][1]} xLoc={1} yLoc={7} selected={this.state.selected == 58} lastMove={this.state.lastMove == 58} killedLoc={this.state.killedLoc == 58} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][2]} xLoc={2} yLoc={7} selected={this.state.selected == 59} lastMove={this.state.lastMove == 59} killedLoc={this.state.killedLoc == 59} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][3]} xLoc={3} yLoc={7} selected={this.state.selected == 60} lastMove={this.state.lastMove == 60} killedLoc={this.state.killedLoc == 60} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][4]} xLoc={4} yLoc={7} selected={this.state.selected == 61} lastMove={this.state.lastMove == 61} killedLoc={this.state.killedLoc == 61} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][5]} xLoc={5} yLoc={7} selected={this.state.selected == 62} lastMove={this.state.lastMove == 62} killedLoc={this.state.killedLoc == 62} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][6]} xLoc={6} yLoc={7} selected={this.state.selected == 63} lastMove={this.state.lastMove == 63} killedLoc={this.state.killedLoc == 63} onClick={this.handlePieceClicked} />
+                <Piece piece={this.state.pieces[7][7]} xLoc={7} yLoc={7} selected={this.state.selected == 64} lastMove={this.state.lastMove == 64} killedLoc={this.state.killedLoc == 64} onClick={this.handlePieceClicked} />
 
 
             </div>
@@ -402,6 +432,47 @@ var SetIntervalMixin = {
     this.intervals.map(clearInterval);
   }
 };
+
+var boardUpdated = React.createClass({
+    mixins: [SetIntervalMixin],
+    propTypes: {
+        callBack: React.PropTypes.func.isRequired,
+        gameId: React.PropTypes.number.isRequired,
+    },
+    loadFromServer: function() {
+        console.log('polling board updated');
+        var data = {
+            'gameId': this.props.gameId
+        };
+        $.ajax({
+            url: urls.POST.boardUpdate,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function(data) {
+                if (data != undefined && data.length == 32) {
+                    this.props.callBack(data['board']);
+                }
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(urls.GET.opponentMoved, status, err.toString());
+            }.bind(this)
+        });
+    },
+    componentDidMount: function() {
+        this.loadFromServer();
+        this.setInterval(this.loadFromServer, this.props.pollInterval);
+    },
+
+
+    render: function() {
+        return (
+            <div>
+            </div>
+        )
+    }
+});
 
 var OpponentMoved = React.createClass({
     mixins: [SetIntervalMixin],
@@ -437,7 +508,6 @@ var OpponentMoved = React.createClass({
     },
     componentDidMount: function() {
         console.log("component Mounted");
-        this.loadFromServer();
         this.setInterval(this.loadFromServer, this.props.pollInterval);
     },
 
@@ -497,33 +567,43 @@ var Piece = React.createClass({
         onClick: React.PropTypes.func.isRequired,
         xLoc: React.PropTypes.number.isRequired,
         yLoc: React.PropTypes.number.isRequired,
-        selected: React.PropTypes.bool.isRequired
+        selected: React.PropTypes.bool.isRequired,
+        lastMove: React.PropTypes.bool.isRequired,
+        killedLoc: React.PropTypes.bool.isRequired,
+
     },
     onClick: function() {
-        console.log("onClick");
-
         this.props.onClick(this.props.xLoc, this.props.yLoc);
     },
 
     render: function() {
 
         var imageStyle = {
-            'width': '100px',
-            'height': '100px'
+            'width': '80',
+            'height': '80px'
         };
 
+        var xval = (this.props.xLoc * 100 + 100);
+        var yval = (this.props.yLoc * 100 + 250);
+
         var divStyle = {
-            'float': 'left'
+            'left': xval + "px",
+            'top': yval + "px",
+            'position': 'absolute'
         };
 
         var buttonStyle = {
             'backgroundColor': '#cccccc',
-            'width': '120px',
-            'height': '120px'
+            'width': '100px',
+            'height': '100px'
         };
 
         if (this.props.selected) {
             buttonStyle['backgroundColor'] = '#BFEFFF';
+        } else if (this.props.killedLoc) {
+            buttonStyle['backgroundColor'] = '#DC143C'
+        }  else if (this.props.lastMove) {
+            buttonStyle['backgroundColor'] = '#BCED91';
         } else if (this.props.xLoc % 2 == this.props.yLoc % 2) {
              buttonStyle['backgroundColor'] = '#ffffff';
         }

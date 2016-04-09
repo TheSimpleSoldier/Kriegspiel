@@ -59,15 +59,20 @@ def opponent_moved_to_json(moved, board):
         'board': board
     }
 
+def board_to_json(board):
+    return {
+        'board': board
+    }
+
 def login_to_json(userInfo):
     return {
         'alias': userInfo.alias,
         'spriteURL': userInfo.spriteURL,
         'games': userInfo.games,
-        'kingURL': userInfo.kingURL
-        'queenURL': userInfo.queenURL
-        'rookURL': userInfo.rookURL
-        'bishopURL': userInfo.bishopURL
-        'knightURL': userInfo.knightURL
+        'kingURL': userInfo.kingURL,
+        'queenURL': userInfo.queenURL,
+        'rookURL': userInfo.rookURL,
+        'bishopURL': userInfo.bishopURL,
+        'knightURL': userInfo.knightURL,
         'pawnURL': userInfo.pawnURL
     }
