@@ -9,6 +9,7 @@ module.exports = {
         newgame: '/newgame',
         opponentJoined: '/opponentJoined',
         opponentMoved: '/opponentMoved',
-        boardUpdate: '/boardUpdate'
+        boardUpdate: '/boardUpdate',
+        surrender: '/surrender'
     }
 };

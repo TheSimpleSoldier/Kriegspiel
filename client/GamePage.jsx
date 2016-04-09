@@ -22,6 +22,7 @@ var GamePage = React.createClass({
             moves: 0,
             unitKilled: "",
             killedLoc: 0,
+            checkmate: 0,
             pieces: [
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
@@ -70,6 +71,7 @@ var GamePage = React.createClass({
                         this.setState({selected: 0});
                         this.setState({isWhite: !this.state.isWhite});
                         this.setState({killedLoc: 0});
+                        this.setState({checkmate: data['checkmate']});
                     }
 
                     this.setState({'unitKilled': ""});
@@ -265,10 +267,53 @@ var GamePage = React.createClass({
       this.setState({'gameStarted': true, 'waiting': false});
     },
 
-    opponentMoved: function(board) {
+    opponentMoved: function(board, checkmate) {
         this.updateGameState(board);
 
+        this.setState({checkmate: checkmate});
         this.setState({'isWhite': !this.state.isWhite});
+    },
+
+    handleSurrender: function() {
+        var data = { 'ourTeam':this.state.ourTeam, 'gameId': this.state.gameId };
+        $.ajax({
+            url: urls.POST.surrender,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST',
+            data: JSON.stringify(data),
+            success: function(data) {
+                this.setState({
+                    moveToX: 0,
+                    moveToY: 0,
+                    selected: 0,
+                    lastMove: 0,
+                    isWhite: true,
+                    gameStarted: false,
+                    waiting: false,
+                    gameId: 0,
+                    ourTeam: true,
+                    moves: 0,
+                    unitKilled: "",
+                    killedLoc: 0,
+                    checkmate: 0,
+                    pieces: [
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                        ["", "", "", "", "", "", "", ""],
+                    ],
+                    board: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                });
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(urls.POST.newComment, status, err.toString());
+            }.bind(this)
+        });
     },
 
     render: function() {
@@ -300,12 +345,53 @@ var GamePage = React.createClass({
             updateBoard = (<boardUpdated pollInterval={250} callBack={this.updateGameState} gameId={this.state.gameId} />)
         }
 
+        if (this.state.gameStarted && this.state.isWhite != this.state.ourTeam) {
+            msg = (<h3>
+                Waiting for opponent to move...
+            </h3>);
+        } else if (this.state.gameStarted) {
+            msg = (<h3>
+               It is your turn
+            </h3>);
+        }
+
+        if (this.state.checkmate > 0) {
+            if (this.state.checkmate == 1) {
+                if (this.state.ourTeam) {
+                    msg = (<h3>
+                        Defeat! You have been put into check mate.
+                    </h3>);
+                } else {
+                    msg = (<h3>
+                        Victory! The enemy is at your mercy.
+                    </h3>);
+                }
+            } else {
+                if (this.state.ourTeam) {
+                    msg = (<h3>
+                        Victory! The enemy is at your mercy.
+                    </h3>);
+                } else {
+                    msg = (<h3>
+                        Defeat! You have been put into check mate.
+                    </h3>);
+                }
+            }
+        }
+
+        var button = (<Button onClick={this.handleNewGame}>
+                    New Game
+                </Button>);
+
+        if (this.state.gameStarted) {
+            button = (<Button bsStyle="danger" onClick={this.handleSurrender}>
+                    Surrender
+                </Button>);
+        }
+
         console.log('gameStarted: ' + this.state.gameStarted);
 
         if (this.state.waiting) {
-            msg = (<div>
-                Waiting for opponent to move...
-            </div>);
             waiting = (
                 <WaitingForOpponent pollInterval={1000} callBack={this.gameStarted} gameId={this.state.gameId} />
             );
@@ -320,14 +406,12 @@ var GamePage = React.createClass({
                     Kriegspiel
                 </h2>
 
+                {button}
+
                 {msg}
                 {killedOpponent}
 
-                <Button onClick={this.handleNewGame}>
-                    New Game
-                </Button>
-
-                <br /> <br />
+                <br /> <br /> <br />
 
                 <Piece piece={this.state.pieces[0][0]} xLoc={0} yLoc={0} selected={this.state.selected == 1} lastMove={this.state.lastMove == 1} killedLoc={this.state.killedLoc == 1} onClick={this.handlePieceClicked} />
                 <Piece piece={this.state.pieces[0][1]} xLoc={1} yLoc={0} selected={this.state.selected == 2} lastMove={this.state.lastMove == 2} killedLoc={this.state.killedLoc == 2} onClick={this.handlePieceClicked} />
@@ -495,7 +579,7 @@ var OpponentMoved = React.createClass({
             data: JSON.stringify(data),
             success: function(data) {
                 if (this.props.ourTeam && data['moved'] == 0 || !this.props.ourTeam && data['moved'] == 1) {
-                    this.props.callBack(data['board']);
+                    this.props.callBack(data['board'], data['checkmate']);
                     console.log('opponent moved: ' + data['moved']);
                 }
 
@@ -584,7 +668,7 @@ var Piece = React.createClass({
         };
 
         var xval = (this.props.xLoc * 100 + 100);
-        var yval = (this.props.yLoc * 100 + 250);
+        var yval = (this.props.yLoc * 100 + 300);
 
         var divStyle = {
             'left': xval + "px",

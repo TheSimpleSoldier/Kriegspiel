@@ -62,11 +62,35 @@ def opponent_moved():
 
     response.content_type = 'application/json'
 
-    if len(oldBoard) > 0 and oldBoard[0].isWhite:
-        return models.opponent_moved_to_json('0', oldBoard[0].board)
-    else:
-        return models.opponent_moved_to_json('1', oldBoard[0].board)
+    if GameEngine.inCheckMate(oldBoard[0].board, True):
+        oldBoard[0].loser = 1
+        oldBoard[0].put()
+    elif GameEngine.inCheckMate(oldBoard[0].board, False):
+        oldBoard[0].loser = 2
+        oldBoard[0].put()
 
+    if len(oldBoard) > 0 and oldBoard[0].isWhite:
+        return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser)
+    else:
+        return models.opponent_moved_to_json('1', oldBoard[0].board, oldBoard[0].loser)
+
+
+@post('/surrender')
+def surrender():
+    game_id = request.json.get('gameId')
+    checkmate = request.json.get('surrender')
+
+    oldBoard = models.Gameboard.query().filter(models.Gameboard.gameID == game_id).fetch(1)
+    if checkmate:
+        oldBoard[0].loser = 1
+    else:
+        oldBoard[0].loser = 2
+
+    oldBoard[0].put()
+    response.content_type = 'application/json'
+    return {
+        '': ''
+    }
 
 @post('/move')
 def post_move():
@@ -107,8 +131,15 @@ def post_move():
 
         oldBoard[0].put()
 
+    if GameEngine.inCheckMate(oldBoard[0].board, True):
+        oldBoard[0].loser = 1
+        oldBoard[0].put()
+    elif GameEngine.inCheckMate(oldBoard[0].board, False):
+        oldBoard[0].loser = 2
+        oldBoard[0].put()
+
     response.content_type = 'application/json'
-    return models.move_response_to_json(move, oldBoard[0].board)
+    return models.move_response_to_json(move, oldBoard[0].board, oldBoard[0].loser)
 
 
 @post('/newgame')
