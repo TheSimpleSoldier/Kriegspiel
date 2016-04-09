@@ -1,4 +1,4 @@
-from server.source.engine.GameEngine import *
+from server.GameEngine import *
 
 def change(x):
     x2 = list(x)
