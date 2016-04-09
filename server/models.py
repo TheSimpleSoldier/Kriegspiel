@@ -9,6 +9,7 @@ class Comment(ndb.Model):
     author = ndb.StringProperty()
 
 class Gameboard(ndb.Model):
+    hasStarted = ndb.BooleanProperty()
     gameID = ndb.IntegerProperty()
     isWhite = ndb.BooleanProperty()
     timestamp = ndb.DateTimeProperty(auto_now_add=True)

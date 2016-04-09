@@ -16,6 +16,7 @@ var GamePage = React.createClass({
             isWhite: true,
             gameStarted: false,
             waiting: false,
+            gameId: 0,
             ourTeam: true,
             pieces: [
                 ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
@@ -34,7 +35,8 @@ var GamePage = React.createClass({
         var data = {
             'start': this.state.selected,
             'end' : (x + 8 * y + 1),
-            'isWhite': this.state.isWhite
+            'isWhite': this.state.isWhite,
+            'gameId': this.state.gameId
         };
 
         $.ajax({
@@ -72,7 +74,7 @@ var GamePage = React.createClass({
         positions[oldY][oldX] = "";
         this.setState({pieces: positions});
         this.setState({selected: 0});
-        this.setState({isWhite: !this.state.isWhite});
+        //this.setState({isWhite: !this.state.isWhite});
         this.setState({});
     },
 
@@ -80,6 +82,9 @@ var GamePage = React.createClass({
 
         if (!this.state.gameStarted) {
             console.log("game has not startd");
+            return;
+        } else if (this.state.isWhite != this.state.ourTeam) {
+            console.log("you cann't move for the other team!");
             return;
         }
 
@@ -129,11 +134,13 @@ var GamePage = React.createClass({
 
                 if (data['team'] == 'white') {
                     console.log('we are white');
-                    this.setState({'waiting': true, 'gameStarted': false, 'ourTeam': true});
+                    this.setState({'waiting': false, 'gameStarted': true, 'ourTeam': true});
                 } else {
                     console.log('we are black');
                     this.setState({'waiting': false, 'gameStarted': true, 'ourTeam': false});
                 }
+
+                this.setState({'gameId': data['id']});
 
                 this.setState({'pieces': [
                     ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
@@ -159,13 +166,12 @@ var GamePage = React.createClass({
     },
 
     opponentMoved: function(moved) {
-        console.log(moved);
-        if (this.state.ourTeam && moved == 1 || !this.state.ourTeam && moved == 0) {
-            this.setState({'isWhite': !this.state.isWhite});
-        }
+        this.setState({'isWhite': !this.state.isWhite});
     },
 
     render: function() {
+
+        console.log('waiting: ' + this.state.waiting);
 
         var divStyle = {
             'height': '1000px'
@@ -174,16 +180,16 @@ var GamePage = React.createClass({
         var waiting = (<div></div>);
         var opponentMoved = (<div></div>);
 
-        if (this.state.isWhite != this.state.ourTeam) {
-            opponentMoved = (
-                <OpponentMoved pollInterval={200} callBack={this.opponentMoved} />
-            )
+        if (this.state.gameStarted && this.state.isWhite != this.state.ourTeam) {
+            //opponentMoved = (
+            //    //<OpponentMoved pollInterval={1000} callBack={this.opponentMoved} gameId={this.state.gameId} outTeam={this.state.ourTeam} />
+            //)
         }
 
         if (this.state.waiting) {
-            waiting = (
-                <WaitingForOpponent pollInterval={200} callBack={this.gameStarted}/>
-            );
+            //waiting = (
+            //    <WaitingForOpponent pollInterval={1000} callBack={this.gameStarted} gameId={this.state.gameId} />
+            //);
         }
 
         return (
@@ -291,19 +297,53 @@ var GamePage = React.createClass({
         );
     }
 });
+/*
+$.ajax({
+                url: urls.POST.move,
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                type: 'POST',
+                data: JSON.stringify(data),
+                success: function(data) {
+                    console.log(data);
+                    this.setState({'moveToX': x, 'moveToY': y});
+                    var data = data['move'];
+
+                    if (data >= 3) {
+                        this.movePiece(x, y);
+                    }
+
+                }.bind(this),
+                error: function(xhr, status, err) {
+                    console.error(urls.POST.newComment, status, err.toString());
+                }.bind(this)
+            });
+ */
 
 var OpponentMoved = React.createClass({
     propTypes: {
         callBack: React.PropTypes.func.isRequired,
+        gameId: React.PropTypes.string.isRequired,
+        ourTeam: React.PropTypes.bool.isRequired,
     },
-    componentDidMount: function() {
+    loadFromServer: function() {
+        var data = {
+            'gameId': this.props.gameId
+        };
         console.log('mounted opponent moved');
         $.ajax({
-            url: urls.GET.opponentMoved,
+            url: urls.POST.opponentMoved,
             dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST',
+            data: JSON.stringify(data),
             success: function(data) {
                 console.log('opponent moved: ' + data);
-                this.props.callBack(data['moved']);
+
+                if (this.props.ourTeam && data['moved'] == 1 || !this.props.ourTeam && data['moved'] == 0) {
+                    this.props.callBack(data['moved']);
+                }
+
 
             }.bind(this),
             error: function(xhr, status, err) {
@@ -311,10 +351,13 @@ var OpponentMoved = React.createClass({
             }.bind(this)
         });
     },
+    componentDidMount: function() {
+        this.loadFromServer();
+        setInterval(this.loadFromServer, this.props.pollInterval);
+    },
     render: function() {
         return (
             <div>
-
             </div>
         )
     }
@@ -323,14 +366,21 @@ var OpponentMoved = React.createClass({
 var WaitingForOpponent = React.createClass({
     propTypes: {
         callBack: React.PropTypes.func.isRequired,
+        gameId: React.PropTypes.string.isRequired
     },
-    componentDidMount: function() {
+    loadFromServer: function() {
+        var data = {
+            'gameId': this.props.gameId
+        };
         console.log('waiting for opponent');
         $.ajax({
-            url: urls.GET.opponentJoined,
+            url: urls.POST.opponentJoined,
             dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST',
+            data: JSON.stringify(data),
             success: function(data) {
-                console.log('opponent joined: ' + data);
+                console.log('opponent joined: ' + data['joined']);
                 if (data['joined'] > 0) {
                     this.props.callBack();
                 }
@@ -339,6 +389,10 @@ var WaitingForOpponent = React.createClass({
                 console.error(urls.GET.opponentJoined, status, err.toString());
             }.bind(this)
         });
+    },
+    componentDidMount: function() {
+        this.loadFromServer();
+        setInterval(this.loadFromServer, this.props.pollInterval);
     },
     render: function() {
         return (

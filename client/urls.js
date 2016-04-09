@@ -2,12 +2,12 @@ module.exports = {
     GET: {
         move: '/move/',
         allComments: '/comments/',
-        opponentJoined: '/opponentJoined/',
-        opponentMoved: '/opponentMoved/'
     },
     POST: {
         newComment: '/comment',
         move: '/move',
-        newgame: '/newgame'
+        newgame: '/newgame',
+        opponentJoined: '/opponentJoined',
+        opponentMoved: '/opponentMoved'
     }
 };
