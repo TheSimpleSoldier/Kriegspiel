@@ -28,6 +28,7 @@ var GamePage = React.createClass({
             pawnKillLocs: [],
             checkLocs: [],
             enemyCheckLocs: [],
+            promotedUnits: [],
             pieces: [
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
@@ -324,7 +325,11 @@ var GamePage = React.createClass({
                 if (board[i] > 0) {
                     x = (board[i] - 1) % 8;
                     y = Math.floor((board[i] - 1) / 8);
-                    positions[y][x] = places[i];
+                    if (this.state.promotedUnits[i]) {
+                        positions[y][x] = places[1];
+                    } else {
+                        positions[y][x] = places[i];
+                    }
                 }
             }
         } else {
@@ -332,7 +337,11 @@ var GamePage = React.createClass({
                 if (board[i] > 0) {
                     x = (board[i] - 1) % 8;
                     y = Math.floor((board[i] - 1) / 8);
-                    positions[y][x] = places[i];
+                    if (this.state.promotedUnits[i]) {
+                        positions[y][x] = places[17];
+                    } else {
+                        positions[y][x] = places[i];
+                    }
                 }
             }
         }
