@@ -14,6 +14,9 @@ var GamePage = React.createClass({
             moveToY: 0,
             selected: 0,
             isWhite: true,
+            gameStarted: false,
+            waiting: false,
+            ourTeam: true,
             pieces: [
                 ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
                 ["blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"],
@@ -59,17 +62,27 @@ var GamePage = React.createClass({
     movePiece: function(x, y) {
         var positions = this.state.pieces;
 
-        var oldX = (this.state.selected % 8) - 1;
-        var oldY = Math.floor(this.state.selected / 8);
+        var oldX = ((this.state.selected - 1) % 8);
+        var oldY = Math.floor((this.state.selected - 1) / 8);
 
+        console.log('oldX: ' + oldX + ' oldY: ' + oldY + "y: " + y + " x: " + x);
+        console.log(positions[oldY][oldX]);
+        console.log(positions[y][x]);
         positions[y][x] = positions[oldY][oldX];
         positions[oldY][oldX] = "";
         this.setState({pieces: positions});
         this.setState({selected: 0});
         this.setState({isWhite: !this.state.isWhite});
+        this.setState({});
     },
 
     handlePieceClicked: function(x, y) {
+
+        if (!this.state.gameStarted) {
+            console.log("game has not startd");
+            return;
+        }
+
         console.log("x: " + x + ", y: " + y);
 
         var spot = x+y*8+1;
@@ -105,17 +118,87 @@ var GamePage = React.createClass({
         }
     },
 
+    handleNewGame: function() {
+        $.ajax({
+            url: urls.POST.newgame,
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            type: 'POST',
+            success: function(data) {
+                console.log(data);
+
+                if (data['team'] == 'white') {
+                    console.log('we are white');
+                    this.setState({'waiting': true, 'gameStarted': false, 'ourTeam': true});
+                } else {
+                    console.log('we are black');
+                    this.setState({'waiting': false, 'gameStarted': true, 'ourTeam': false});
+                }
+
+                this.setState({'pieces': [
+                    ["blackRook.png", "blackKnight.png", "blackBishop.png", "blackQueen.png", "blackKing.png", "blackBishop.png", "blackKnight.png", "blackRook.png"],
+                    ["blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"],
+                    ["", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", ""],
+                    ["", "", "", "", "", "", "", ""],
+                    ["whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png"],
+                    ["whiteRook.png", "whiteKnight.png", "whiteBishop.png", "whiteQueen.png", "whiteKing.png", "whiteBishop.png", "whiteKnight.png", "whiteRook.png"]
+                ], 'isWhite': true
+                })
+
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(urls.POST.newComment, status, err.toString());
+            }.bind(this)
+        });
+    },
+
+    gameStarted: function() {
+      this.setState({'gameStarted': true, 'waiting': false});
+    },
+
+    opponentMoved: function(moved) {
+        console.log(moved);
+        if (this.state.ourTeam && moved == 1 || !this.state.ourTeam && moved == 0) {
+            this.setState({'isWhite': !this.state.isWhite});
+        }
+    },
+
     render: function() {
 
         var divStyle = {
             'height': '1000px'
         };
 
+        var waiting = (<div></div>);
+        var opponentMoved = (<div></div>);
+
+        if (this.state.isWhite != this.state.ourTeam) {
+            opponentMoved = (
+                <OpponentMoved pollInterval={200} callBack={this.opponentMoved} />
+            )
+        }
+
+        if (this.state.waiting) {
+            waiting = (
+                <WaitingForOpponent pollInterval={200} callBack={this.gameStarted}/>
+            );
+        }
+
         return (
             <div style={divStyle} >
+                {waiting}
+                {opponentMoved}
                 <h2>
                     Kriegspiel
                 </h2>
+
+                <Button onClick={this.handleNewGame}>
+                    New Game
+                </Button>
+
+                <br /> <br />
 
                 <Piece piece={this.state.pieces[0][0]} xLoc={0} yLoc={0} selected={this.state.selected == 1} onClick={this.handlePieceClicked} />
                 <Piece piece={this.state.pieces[0][1]} xLoc={1} yLoc={0} selected={this.state.selected == 2} onClick={this.handlePieceClicked} />
@@ -206,6 +289,63 @@ var GamePage = React.createClass({
 
             </div>
         );
+    }
+});
+
+var OpponentMoved = React.createClass({
+    propTypes: {
+        callBack: React.PropTypes.func.isRequired,
+    },
+    componentDidMount: function() {
+        console.log('mounted opponent moved');
+        $.ajax({
+            url: urls.GET.opponentMoved,
+            dataType: 'json',
+            success: function(data) {
+                console.log('opponent moved: ' + data);
+                this.props.callBack(data['moved']);
+
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(urls.GET.opponentMoved, status, err.toString());
+            }.bind(this)
+        });
+    },
+    render: function() {
+        return (
+            <div>
+
+            </div>
+        )
+    }
+});
+
+var WaitingForOpponent = React.createClass({
+    propTypes: {
+        callBack: React.PropTypes.func.isRequired,
+    },
+    componentDidMount: function() {
+        console.log('waiting for opponent');
+        $.ajax({
+            url: urls.GET.opponentJoined,
+            dataType: 'json',
+            success: function(data) {
+                console.log('opponent joined: ' + data);
+                if (data['joined'] > 0) {
+                    this.props.callBack();
+                }
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(urls.GET.opponentJoined, status, err.toString());
+            }.bind(this)
+        });
+    },
+    render: function() {
+        return (
+            <div>
+
+            </div>
+        )
     }
 });
 

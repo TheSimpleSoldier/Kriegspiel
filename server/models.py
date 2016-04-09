@@ -21,3 +21,18 @@ def move_response_to_json(move):
     return {
         'move': move
     }
+
+def new_game_to_json(team):
+    return {
+        'team': team
+    }
+
+def opponent_joined_to_json(joined):
+    return {
+        'joined': joined
+    }
+
+def opponent_moved_to_json(moved):
+    return {
+        'moved': moved
+    }
