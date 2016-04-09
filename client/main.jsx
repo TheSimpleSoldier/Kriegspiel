@@ -9,6 +9,9 @@ var Well = require('react-bootstrap').Well;
 var MainNav = require('./MainNav');
 var CommentList = require('./CommentList');
 var GamePage = require('./GamePage');
+var UserInfo = require('./UserInfo');
+var AI = require('./AI');
+var MatchMaking = require('./MatchMaking');
 
 
 var InterfaceComponent = React.createClass({
@@ -45,7 +48,24 @@ var InterfaceComponent = React.createClass({
             nav = 2;
             content = (
                 <Well>
-                    <GamePage />
+                    <MatchMaking />
+                </Well>
+            )
+        }
+        if (this.props.router.current[0] == 'ai') {
+            nav = 3;
+            content = (
+                <Well>
+                    <AI />
+                </Well>
+            )
+        }
+
+        if (this.props.router.current[0] == 'settings') {
+            nav = 4;
+            content = (
+                <Well>
+                    <UserInfo />
                 </Well>
             )
         }

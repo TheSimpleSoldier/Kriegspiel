@@ -69,13 +69,13 @@ def opponent_moved():
         oldBoard[0].loser = 2
         oldBoard[0].put()
 
-
-    pawnLocs = []
+    pawnLocs = GameEngine.pawnAttacks(oldBoard[0].board, oldBoard[0].isWhite)
+    checkLocs = []
 
     if len(oldBoard) > 0 and oldBoard[0].isWhite:
-        return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser, pawnLocs)
+        return models.opponent_moved_to_json('0', oldBoard[0].board, oldBoard[0].loser, pawnLocs, checkLocs)
     else:
-        return models.opponent_moved_to_json('1', oldBoard[0].board, oldBoard[0].loser, pawnLocs)
+        return models.opponent_moved_to_json('1', oldBoard[0].board, oldBoard[0].loser, pawnLocs, checkLocs)
 
 
 @post('/surrender')
