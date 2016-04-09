@@ -254,7 +254,7 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
                 tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
             tempPositions[loc] = endPos
-            if(not inCheck(tempPosition, whiteTurn)):
+            if(not inCheck(tempPositions, whiteTurn)):
                 return 4 + checkPos(positions, moveLoc, whiteTurn)
             else:
                 return 2
@@ -264,7 +264,7 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
                 tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
             tempPositions[loc] = endPos
-            if(not inCheck(tempPosition, whiteTurn)):
+            if(not inCheck(tempPositions, whiteTurn)):
                 return 4 + checkPos(positions, moveLoc, whiteTurn)
             else:
                 return 2
@@ -330,9 +330,9 @@ def inCheck(positions, white):
         loc = 16
         start = 1
     
-    for k in range(0, 15):
+    for k in range(0, 14):
         if(positions[start + k] != 0):
-            if(isValidMove(positions, white, positions[start + k], positions[loc])):
+            if(isValidMove(positions, not white, positions[start + k], positions[loc]) >= 3):
                 return True
 
     for k in range(-1,1):
@@ -356,7 +356,7 @@ def inCheckMate(positions, white):
     for k in range(0, 15):
         if(positions[start + k] != 0):
             for a in range(1,64):
-                if(isValidMove(positions, white, positions[start + k], a)):
+                if(isValidMove(positions, white, positions[start + k], a) >= 3):
                     tempPositions = list(positions)
                     if(checkPos(tempPositions, a, white) != -1 and checkPos(tempPositions, a, white) != -3):
                         tempPositions[checkPos(tempPositions, a, white)] = 0
@@ -365,3 +365,28 @@ def inCheckMate(positions, white):
                         return False
     
     return True
+
+def pawnAttacks(positions, white):
+    toReturn = []
+    start = 8
+    if(not white):
+        start = 24
+    
+    for k in range(0, 8):
+        if(positions[start + k] != 0):
+            if(white): 
+                moveLoc = move(positions[start + k], 1, -1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+                moveLoc = move(positions[start + k], -1, -1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+            else:
+                moveLoc = move(positions[start + k], 1, 1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+                moveLoc = move(positions[start + k], -1, 1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+   
+    return toReturn
