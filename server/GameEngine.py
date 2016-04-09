@@ -27,11 +27,11 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             return 0
         
         newPositions = list(positions)
-        if(checkPos(newPositions, toReturn, whiteTurn) != -1):
+        if(checkPos(newPositions, toReturn, whiteTurn) != -1 and checkPos(newPositions, toReturn, whiteTurn) != -3):
             newPositions[checkPos(newPositions, toReturn, whiteTurn)] = 0
         newPositions[loc] = toReturn
-        if(not inCheck(positions, whiteTurn)):
-            return 3 + checkPos(newPositions, toReturn, whiteTurn)
+        if(not inCheck(newPositions, whiteTurn)):
+            return 4 + checkPos(positions, toReturn, whiteTurn)
         else:
             return 2
 
@@ -199,7 +199,6 @@ def checkPos(positions, moveLoc, white):
     return -1
 
 def inCheck(positions, white):
-    print "you are totally in check"
     loc = 0
     start = 17
     if(not white):
