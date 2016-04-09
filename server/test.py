@@ -14,6 +14,12 @@ print "king"
 print str(isValidMove(state, False, 5, 13)) + " = 1"
 state[28] = 0
 print str(isValidMove(state, False, 5, 13)) + " = 3"
+tempState = [0] * 32
+tempState[0] = 28
+tempState[16] = 37
+print str(inCheck(tempState, True)) + " = True"
+tempState[16] = 46
+print str(inCheck(tempState, True)) + " = False"
 
 print "black pawn"
 print str(isValidMove(state, True, 9, 17)) + " = 3"
