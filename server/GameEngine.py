@@ -123,7 +123,7 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             return 3
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
             return 1
-        if(startPos / 8 == 6):
+        if((startPos - 1) / 8 == 6):
             moveLoc = move(startPos, 0, -2)
             if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
                 return 3
@@ -144,7 +144,7 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             return 3
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
             return 1
-        if(startPos / 8 == 1):
+        if((startPos - 1) / 8 == 1):
             moveLoc = move(startPos, 0, 2)
             if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
                 return 3
