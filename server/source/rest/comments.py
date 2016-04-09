@@ -144,7 +144,7 @@ def post_move():
         oldBoard[0].put()
 
     response.content_type = 'application/json'
-    return models.move_response_to_json(move, oldBoard[0].board, oldBoard[0].loser, checkLocs)
+    return models.move_response_to_json(move, oldBoard[0].board, oldBoard[0].loser, checkLocs, oldBoard[0].promotions)
 
 
 @post('/updateAlias')

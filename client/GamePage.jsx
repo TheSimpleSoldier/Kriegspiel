@@ -82,6 +82,7 @@ var GamePage = React.createClass({
                         this.setState({checkmate: data['checkmate']});
                         this.setState({checkLocs: []});
                         this.setState({enemyCheckLocs: data['checkLocs']});
+                        this.setState({promotions: data['promotions']});
                     }
 
                     this.setState({'unitKilled': ""});
@@ -545,6 +546,9 @@ var GamePage = React.createClass({
                 {putEnemyInCheck}
                 {killedOpponent}
 
+                <ChatPanel />
+                <Legend />
+
                 <br /> <br /> <br />
 
                 <Piece piece={this.state.pieces[0][0]} xLoc={0} yLoc={0} selected={this.state.selected == 1} lastMove={this.state.lastMove == 1} killedLoc={this.state.killedLoc == 1} pawnKillLoc={this.pawnKillLoc(1)} checkLocs={this.inCheckLocs(1)} onClick={this.handlePieceClicked} />
@@ -638,6 +642,101 @@ var GamePage = React.createClass({
                 <PiecesTaken board={this.state.board} ourTeam={this.state.ourTeam} moves={this.state.moves} />
 
             </div>
+        );
+    }
+});
+
+var Legend = React.createClass({
+
+
+    render: function() {
+        var style = {
+            'width': '250px',
+            'height': '250px',
+            'float': 'left',
+            'marginTop': '400px'
+        };
+
+        var greenStyle = {
+            'width': '10px',
+            'height': '10px',
+            'backgroundColor': '#DC143C',
+            'float': 'left',
+        };
+
+        var blueStyle = {
+            'width': '10px',
+            'height': '10px',
+            'backgroundColor': '#BFEFFF',
+            'float': 'left',
+        };
+
+        var yellowStyle = {
+            'width': '10px',
+            'height': '10px',
+            'backgroundColor': '#FBEC5D',
+            'float': 'left',
+        };
+
+        var redStyle = {
+            'width': '10px',
+            'height': '10px',
+            'backgroundColor': '#FBEC5D',
+            'float': 'left',
+        };
+
+        var orangeStyle = {
+            'width': '10px',
+            'height': '10px',
+            'backgroundColor': '#FF9912',
+            'float': 'left',
+        };
+
+        var divStyle = {
+            'float' :'left',
+            'marginTop': '-5px'
+        };
+
+        return (<Well style={style}>
+                <h4>
+                Legend:
+                </h4>
+                <div style={greenStyle}></div>
+                <div style={divStyle}> Last move </div>
+                <br />
+
+                <div style={blueStyle}></div>
+
+                <div style={divStyle}>Current selection</div>
+                <br />
+
+                <div style={yellowStyle}></div>
+                <div style={divStyle}> Possible Pawn Kills</div>
+                <br />
+
+                <div style={redStyle}></div>
+                <div style={divStyle}> Piece captured</div>
+                <br />
+
+                <div style={orangeStyle}></div>
+                <div style={divStyle}> Direction in check </div>
+                <br />
+            </Well>);
+    }
+});
+
+var ChatPanel = React.createClass({
+    render: function() {
+        var style = {
+            'width': '250px',
+            'height': '1000px',
+            'float': 'right'
+        };
+
+        return (
+            <Well style={style}>
+                Chat Pannel!
+            </Well>
         );
     }
 });
@@ -986,7 +1085,7 @@ var Piece = React.createClass({
             yOffset = 2000;
         }
 
-        var xval = (this.props.xLoc * imageSize + 100);
+        var xval = (this.props.xLoc * imageSize + 300);
         var yval = (this.props.yLoc * imageSize + yOffset);
 
         var divStyle = {
