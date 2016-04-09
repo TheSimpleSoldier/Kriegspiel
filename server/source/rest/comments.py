@@ -20,10 +20,24 @@ def post_move():
     end = request.json.get('end')
     is_white = request.json.get('isWhite')
 
-    move = GameEngine.isValidMove(GameEngine.getInitialState(), is_white, start, end)
+    oldBoard = models.Gameboard.query().order(models.Gameboard.timestamp).fetch(1)
+    positions = oldBoard.board
 
-    # if move >= 3:
-        # update state
+    move = GameEngine.isValidMove(positions, is_white, start, end)
+
+    if move >= 3:
+        if move >= 4:
+            positions[move - 4] = 0
+        for loc in range(0, 32):
+            if positions[loc] == start:
+                positions[loc] = end
+                break
+
+        gameboard = models.Gameboard(
+            isWhite = not is_white,
+            board = positions
+        )
+        gameboard.put()
 
     response.content_type = 'application/json'
     return models.move_response_to_json(move)
@@ -31,8 +45,9 @@ def post_move():
 
 @post('/newgame')
 def new_game():
-
-    return {'created': ''}
+    board = models.Gameboard(True,
+                             GameEngine.getInitialState())
+    return {'created': board }
 
 @post('/comment')
 def create_new_comment():
