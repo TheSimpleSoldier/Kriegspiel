@@ -360,7 +360,7 @@ def inCheckMate(positions, white):
                     tempPositions = list(positions)
                     if(checkPos(tempPositions, a, white) != -1 and checkPos(tempPositions, a, white) != -3):
                         tempPositions[checkPos(tempPositions, a, white)] = 0
-                    tempPositions[k] = a
+                    tempPositions[start + k] = a
                     if(not inCheck(tempPositions, white)):
                         return False
     
