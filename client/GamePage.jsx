@@ -18,6 +18,8 @@ var GamePage = React.createClass({
             waiting: false,
             gameId: 0,
             ourTeam: true,
+            moves: 0,
+            unitKilled: "",
             pieces: [
                 ["", "", "", "", "", "", "", ""],
                 ["", "", "", "", "", "", "", ""],
@@ -51,8 +53,19 @@ var GamePage = React.createClass({
                     var newData = data['move'];
 
                     if (newData >= 3) {
+                        this.setState({moves: this.state.moves+1});
+                        console.log('board: ' + data['board']);
                         this.updateGameState(data['board']);
-                        //this.movePiece(x, y);
+                        this.setState({selected: 0});
+                        this.setState({isWhite: !this.state.isWhite});
+                    }
+
+                    this.setState({'unitKilled': ""});
+
+                    if (newData > 3) {
+                        this.setState({});
+                        this.setState({'unitKilled': this.unitKilled(newData)});
+                        console.log("killed: " + (newData - 4));
                     }
 
                 }.bind(this),
@@ -62,25 +75,7 @@ var GamePage = React.createClass({
             });
     },
 
-    movePiece: function(x, y) {
-        var positions = this.state.pieces;
-
-        var oldX = ((this.state.selected - 1) % 8);
-        var oldY = Math.floor((this.state.selected - 1) / 8);
-
-        console.log('oldX: ' + oldX + ' oldY: ' + oldY + "y: " + y + " x: " + x);
-        console.log(positions[oldY][oldX]);
-        console.log(positions[y][x]);
-        positions[y][x] = positions[oldY][oldX];
-        positions[oldY][oldX] = "";
-        this.setState({pieces: positions});
-        this.setState({selected: 0});
-        this.setState({isWhite: !this.state.isWhite});
-        this.setState({});
-    },
-
     handlePieceClicked: function(x, y) {
-
         if (!this.state.gameStarted) {
             console.log("game has not startd");
             return;
@@ -172,11 +167,71 @@ var GamePage = React.createClass({
         });
     },
 
+    unitKilled: function(move) {
+        if (move > 15) {
+            move -= 16;
+        }
+
+        // king
+        if (move == 0) {
+            return "King";
+        } else if (move == 1) { // queen
+            return "Queen";
+        } else if (move < 4) { // rook
+            return "Rook";
+        } else if (move < 6) { // knight
+            return "Knight";
+        } else if (move < 8) { // bishop
+            return "Bishop";
+        } else { // pawn
+            return "Pawn";
+        }
+    },
+
+    clearBoard: function() {
+        var positions = this.state.pieces;
+
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                positions[i][j] = "";
+            }
+        }
+
+        this.setState({ 'pieces': positions });
+    },
+
+    /*
+    [wK, wQ, wR1, wR2, wKn1, wKn2, wB1, wB2, wP1, wP2, wP3, wP4, wP5, wP6, wP7, wP8,
+    bK, bQ, bR1, bR2, bKn1, bKn2, bB1, bB2, bP1, bP2, bP3, bP4, bP5, bP6, bP7, bP8]
+     */
     updateGameState: function(board) {
+        if (board == undefined || board.length < 32 || this.state.moves == 0) {
+            return;
+        }
+
+        this.clearBoard();
+
+        var places = ["whiteKing.png", "whiteQueen.png", "whiteRook.png", "whiteRook.png", "whiteKnight.png", "whiteKnight.png", "whiteBishop.png", "whiteBishop.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png", "whitePawn.png",
+                      "blackKing.png", "blackQueen.png", "blackRook.png", "blackRook.png", "blackKnight.png", "blackKnight.png", "blackBishop.png",  "blackBishop.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png", "blackPawn.png"];
+        var x, y;
+        var positions = this.state.pieces;
+
         if (this.state.ourTeam) {
-
+            for (var i = 0; i < 16; i++) {
+                if (board[i] > 0) {
+                    x = (board[i] - 1) % 8;
+                    y = Math.floor((board[i] - 1) / 8);
+                    positions[y][x] = places[i];
+                }
+            }
         } else {
-
+            for (var i = 16; i < 32; i++) {
+                if (board[i] > 0) {
+                    x = (board[i] - 1) % 8;
+                    y = Math.floor((board[i] - 1) / 8);
+                    positions[y][x] = places[i];
+                }
+            }
         }
     },
 
@@ -185,6 +240,7 @@ var GamePage = React.createClass({
     },
 
     opponentMoved: function(board) {
+        console.log("opponentMoved board: " + board);
         this.updateGameState(board);
 
         this.setState({'isWhite': !this.state.isWhite});
@@ -200,6 +256,14 @@ var GamePage = React.createClass({
 
         var waiting = (<div></div>);
         var opponentMoved = (<div></div>);
+        var msg = (<div></div>);
+        var killedOpponent = (<div></div>);
+
+        if (this.state.unitKilled != "") {
+            killedOpponent = (<div>
+                You captured a {this.state.unitKilled}
+            </div>)
+        }
 
         if (this.state.gameStarted && this.state.isWhite != this.state.ourTeam) {
             opponentMoved = (
@@ -210,6 +274,9 @@ var GamePage = React.createClass({
         console.log('gameStarted: ' + this.state.gameStarted);
 
         if (this.state.waiting) {
+            msg = (<div>
+                Waiting for opponent to move...
+            </div>);
             waiting = (
                 <WaitingForOpponent pollInterval={1000} callBack={this.gameStarted} gameId={this.state.gameId} />
             );
@@ -222,6 +289,9 @@ var GamePage = React.createClass({
                 <h2>
                     Kriegspiel
                 </h2>
+
+                {msg}
+                {killedOpponent}
 
                 <Button onClick={this.handleNewGame}>
                     New Game
@@ -354,7 +424,7 @@ var OpponentMoved = React.createClass({
             data: JSON.stringify(data),
             success: function(data) {
                 if (this.props.ourTeam && data['moved'] == 0 || !this.props.ourTeam && data['moved'] == 1) {
-                    this.props.callBack(data['loc']);
+                    this.props.callBack(data['board']);
                     console.log('opponent moved: ' + data['moved']);
                 }
 

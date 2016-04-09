@@ -79,10 +79,14 @@ def post_move():
         oldBoard[0].isWhite = not is_white
         if move >= 4:
             positions[move - 4] = 0
+            move = end
+            for loc in range(0, 32):
+                if positions[loc] == end:
+                    move = loc
+
         for loc in range(0, 32):
             if positions[loc] == start:
                 positions[loc] = end
-                logging.info("loc == start")
                 break
 
         oldBoard[0].board = positions
