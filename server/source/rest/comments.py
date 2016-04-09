@@ -131,7 +131,7 @@ def post_move():
                 break
 
         oldBoard[0].board = positions
-
+        oldBoard[0].promotions = promote_pawn(oldBoard[0])
         oldBoard[0].put()
 
     checkLocs = GameEngine.inCheckLocs(oldBoard[0].board, not oldBoard[0].isWhite)
@@ -228,7 +228,8 @@ def new_game():
                                  gameID=id,
                                  hasStarted=False,
                                  lastMove=0,
-                                 whiteId=user.user_id()
+                                 whiteId=user.user_id(),
+                                 promotions=[False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False]
         )
 
         board.put()
@@ -262,12 +263,11 @@ def promote_pawn(gameboard):
     board = gameboard.board
     promotions = gameboard.promotions
     for i in range (8,16):
-        if (board[i] -1) / 8 == 0:
+        if (board[i]-1) / 8 == 0:
             promotions[i] = True
 
     for i in range(24,32):
         if (board[i]-1) / 8 == 7:
             promotions[i] = True
 
-    gameboard.promotions = promotions
-    return gameboard
+    return promotions
