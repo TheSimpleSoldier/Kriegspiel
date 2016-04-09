@@ -16,6 +16,18 @@ class Gameboard(ndb.Model):
     board = ndb.JsonProperty()
     lastMove = ndb.IntegerProperty()
 
+class User(ndb.Model):
+    userID = ndb.IntegerProperty()
+    alias = ndb.StringProperty()
+    spriteURL = ndb.StringProperty()
+    games = ndb.JsonProperty()
+    kingURL = ndb.StringProperty()
+    queenURL = ndb.StringProperty()
+    rookURL = ndb.StringProperty()
+    bishopURL = ndb.StringProperty()
+    knightURL = ndb.StringProperty()
+    pawnURL = ndb.StringProperty()
+
 def comment_to_json(comment):
     return {
         'key': comment.key.urlsafe(),
@@ -50,4 +62,17 @@ def opponent_moved_to_json(moved, board):
 def board_to_json(board):
     return {
         'board': board
+    }
+
+def login_to_json(userInfo):
+    return {
+        'alias': userInfo.alias,
+        'spriteURL': userInfo.spriteURL,
+        'games': userInfo.games,
+        'kingURL': userInfo.kingURL
+        'queenURL': userInfo.queenURL
+        'rookURL': userInfo.rookURL
+        'bishopURL': userInfo.bishopURL
+        'knightURL': userInfo.knightURL
+        'pawnURL': userInfo.pawnURL
     }

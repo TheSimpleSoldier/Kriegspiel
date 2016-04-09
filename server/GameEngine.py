@@ -220,3 +220,23 @@ def inCheck(positions, white):
 
 def getInitialState():
     return [61, 60, 57, 64, 58, 63, 59, 62, 49, 50, 51, 52, 53, 54, 55, 56, 5, 4, 1, 8, 2, 7, 3, 6, 9, 10, 11, 12, 13, 14, 15, 16]
+
+def inCheckMate(positions, white):
+    if(not inCheck(positions, white)):
+        return False
+    start = 0
+    if(not white):
+        start = 16
+
+    for k in range(0, 15):
+        if(positions[start + k] != 0):
+            for a in range(1,64):
+                if(isValidMove(positions, white, positions[start + k], a)):
+                    tempPositions = list(positions)
+                    if(checkPos(tempPositions, a, white) != -1 and checkPos(tempPositions, a, white) != -3):
+                        tempPositions[checkPos(tempPositions, a, white)] = 0
+                    tempPositions[k] = a
+                    if(not inCheck(tempPositions, white)):
+                        return False
+    
+    return True
