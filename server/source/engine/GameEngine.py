@@ -27,54 +27,54 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
             return 0
         
         newPositions = list(positions)
-        if(checkPos(toReturn) != -1):
-            newPositions[checkPos(toReturn)] = 0
+        if(checkPos(newPositions, toReturn, whiteTurn) != -1):
+            newPositions[checkPos(newPositions, toReturn, whiteTurn)] = 0
         newPositions[loc] = toReturn
         if(not inCheck(positions, whiteTurn)):
-            return 3 + checkPos(toReturn)
+            return 3 + checkPos(newPositions, toReturn, whiteTurn)
         else:
             return 2
 
     elif(loc == 1 or loc == 17):
         # queen move
-        up = moveMany(positions, startPos, endPos, 0, -1)
+        up = moveMany(positions, startPos, endPos, 0, -1, whiteTurn)
         if(up != -1):
             return up
-        down = moveMany(positions, startPos, endPos, 0, 1)
+        down = moveMany(positions, startPos, endPos, 0, 1, whiteTurn)
         if(down != -1):
             return down
-        right = moveMany(positions, startPos, endPos, 1, 0)
+        right = moveMany(positions, startPos, endPos, 1, 0, whiteTurn)
         if(right != -1):
             return right
-        left = moveMany(positions, startPos, endPos, -1, 0)
+        left = moveMany(positions, startPos, endPos, -1, 0, whiteTurn)
         if(left != -1):
             return left
-        upLeft = moveMany(positions, startPos, endPos, -1, -1)
+        upLeft = moveMany(positions, startPos, endPos, -1, -1, whiteTurn)
         if(upLeft != -1):
             return upLeft
-        downLeft = moveMany(positions, startPos, endPos, -1, 1)
+        downLeft = moveMany(positions, startPos, endPos, -1, 1, whiteTurn)
         if(downLeft != -1):
             return downLeft
-        upRight = moveMany(positions, startPos, endPos, 1, -1)
+        upRight = moveMany(positions, startPos, endPos, 1, -1, whiteTurn)
         if(upRight != -1):
             return upRight
-        downRight = moveMany(positions, startPos, endPos, 1, 1)
+        downRight = moveMany(positions, startPos, endPos, 1, 1, whiteTurn)
         if(downRight != -1):
             return downRight
         return 0
 
     elif(loc == 2 or loc == 3 or loc == 18 or loc == 19):
         # rook move
-        up = moveMany(positions, startPos, endPos, 0, -1)
+        up = moveMany(positions, startPos, endPos, 0, -1, whiteTurn)
         if(up != -1):
             return up
-        down = moveMany(positions, startPos, endPos, 0, 1)
+        down = moveMany(positions, startPos, endPos, 0, 1, whiteTurn)
         if(down != -1):
             return down
-        right = moveMany(positions, startPos, endPos, 1, 0)
+        right = moveMany(positions, startPos, endPos, 1, 0, whiteTurn)
         if(right != -1):
             return right
-        left = moveMany(positions, startPos, endPos, -1, 0)
+        left = moveMany(positions, startPos, endPos, -1, 0, whiteTurn)
         if(left != -1):
             return left
         return 0
@@ -82,35 +82,35 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
     elif(loc == 4 or loc == 5 or loc == 20 or loc == 21):
         # knight move
         if(move(startPos, 1, 2) == endPos):
-            return  4 + checkPos(positions, move(startPos, 1, 2))
+            return  4 + checkPos(positions, move(startPos, 1, 2), whiteTurn)
         if(move(startPos, -1, 2) == endPos):
-            return  4 + checkPos(positions, move(startPos, -1, 2))
+            return  4 + checkPos(positions, move(startPos, -1, 2), whiteTurn)
         if(move(startPos, 1, -2) == endPos):
-            return  4 + checkPos(positions, move(startPos, 1, -2))
+            return  4 + checkPos(positions, move(startPos, 1, -2), whiteTurn)
         if(move(startPos, -1, -2) == endPos):
-            return  4 + checkPos(positions, move(startPos, -1, -2))
+            return  4 + checkPos(positions, move(startPos, -1, -2), whiteTurn)
         if(move(startPos, 2, 1) == endPos):
-            return  4 + checkPos(positions, move(startPos, 2, 1))
+            return  4 + checkPos(positions, move(startPos, 2, 1), whiteTurn)
         if(move(startPos, -2, 1) == endPos):
-            return  4 + checkPos(positions, move(startPos, -2, 1))
+            return  4 + checkPos(positions, move(startPos, -2, 1), whiteTurn)
         if(move(startPos, 2, -1) == endPos):
-            return  4 + checkPos(positions, move(startPos, 2, -1))
+            return  4 + checkPos(positions, move(startPos, 2, -1), whiteTurn)
         if(move(startPos, -2, -1) == endPos):
-            return  4 + checkPos(positions, move(startPos, -2, -1))
+            return  4 + checkPos(positions, move(startPos, -2, -1), whiteTurn)
         return 0
 
     elif(loc == 6 or loc == 7 or loc == 22 or loc == 23):
         # bishop move
-        upLeft = moveMany(positions, startPos, endPos, -1, -1)
+        upLeft = moveMany(positions, startPos, endPos, -1, -1, whiteTurn)
         if(upLeft != -1):
             return upLeft
-        downLeft = moveMany(positions, startPos, endPos, -1, 1)
+        downLeft = moveMany(positions, startPos, endPos, -1, 1, whiteTurn)
         if(downLeft != -1):
             return downLeft
-        upRight = moveMany(positions, startPos, endPos, 1, -1)
+        upRight = moveMany(positions, startPos, endPos, 1, -1, whiteTurn)
         if(upRight != -1):
             return upRight
-        downRight = moveMany(positions, startPos, endPos, 1, 1)
+        downRight = moveMany(positions, startPos, endPos, 1, 1, whiteTurn)
         if(downRight != -1):
             return downRight
 
@@ -119,34 +119,34 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
     elif(loc == 8 or loc == 9 or loc == 10 or loc == 11 or loc == 12 or loc == 13 or loc == 14 or loc == 15):
         # white pawn
         moveLoc = move(startPos, 0, -1)
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) == -1):
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
             return 3
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) != -1):
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
             return 1
         moveLoc = move(startPos, 1, -1)
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) != -1):
-            return 4 + checkPos(positions, moveLoc)
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
+            return 4 + checkPos(positions, moveLoc, whiteTurn)
         moveLoc = move(startPos, -1, -1)
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) != -1):
-            return 4 + checkPos(positions, moveLoc)
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
+            return 4 + checkPos(positions, moveLoc, whiteTurn)
         return 0
 
     else:
         # black pawn
         moveLoc = move(startPos, 0, 1)
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) == -1):
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
             return 3
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) != -1):
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
             return 1
         moveLoc = move(startPos, 1, 1)
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) != -1):
-            return 4 + checkPos(positions, moveLoc)
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
+            return 4 + checkPos(positions, moveLoc, whiteTurn)
         moveLoc = move(startPos, -1, 1)
-        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc) != -1):
-            return 4 + checkPos(positions, moveLoc)
+        if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
+            return 4 + checkPos(positions, moveLoc, whiteTurn)
         return 0
 
-def moveMany(positions, startPos, endPos, xMoveOne, yMoveOne):
+def moveMany(positions, startPos, endPos, xMoveOne, yMoveOne, white):
     blocked = False
     xMove = xMoveOne
     yMove = yMoveOne
@@ -155,8 +155,8 @@ def moveMany(positions, startPos, endPos, xMoveOne, yMoveOne):
         if(moveLoc == endPos):
             if(blocked):
                 return 1
-            return 4 + checkPos(positions, endPos)
-        if(checkPos(positions, moveLoc) != -1):
+            return 4 + checkPos(positions, endPos, white)
+        if(checkPos(positions, moveLoc, white) != -1):
             blocked = True
         xMove += xMoveOne
         yMove += yMoveOne
@@ -176,9 +176,13 @@ def move(startPos, xMove, yMove):
 
     return endPos
 
-def checkPos(positions, moveLoc):
+def checkPos(positions, moveLoc, white):
     for loc in range(0, 32):
         if(positions[loc] == moveLoc):
+            if(white and loc < 16):
+                return -3
+            if(not white and loc >= 16):
+                return -3
             return loc
     return -1
 
