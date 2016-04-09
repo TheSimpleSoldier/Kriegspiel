@@ -14,7 +14,9 @@ var MainNav = React.createClass({
             <Navbar>
                 <Nav activeKey={this.props.current}>
                     <NavItem key={1} href={"#home"}>Home</NavItem>
-                    <NavItem key={2} href={"#game"}>Game Page</NavItem>
+                    <NavItem key={2} href={"#game"}>Match making</NavItem>
+                    <NavItem key={3} href={"#ai"}>AI</NavItem>
+                    <NavItem key={4} href={"#settings"}>User Profile </NavItem>
                 </Nav>
             </Navbar>
         );

@@ -84,21 +84,77 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
     elif(loc == 4 or loc == 5 or loc == 20 or loc == 21):
         # knight move
         if(move(startPos, 1, 2) == endPos):
-            return  4 + checkPos(positions, move(startPos, 1, 2), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, 1, 2), whiteTurn)
+            else:
+                return 2
         if(move(startPos, -1, 2) == endPos):
-            return  4 + checkPos(positions, move(startPos, -1, 2), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, -1, 2), whiteTurn)
+            else:
+                return 2
         if(move(startPos, 1, -2) == endPos):
-            return  4 + checkPos(positions, move(startPos, 1, -2), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, 1, -2), whiteTurn)
+            else:
+                return 2
         if(move(startPos, -1, -2) == endPos):
-            return  4 + checkPos(positions, move(startPos, -1, -2), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, -1, -2), whiteTurn)
+            else:
+                return 2
         if(move(startPos, 2, 1) == endPos):
-            return  4 + checkPos(positions, move(startPos, 2, 1), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, 2, 1), whiteTurn)
+            else:
+                return 2
         if(move(startPos, -2, 1) == endPos):
-            return  4 + checkPos(positions, move(startPos, -2, 1), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, -2, 1), whiteTurn)
+            else:
+                return 2
         if(move(startPos, 2, -1) == endPos):
-            return  4 + checkPos(positions, move(startPos, 2, -1), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, 2, -1), whiteTurn)
+            else:
+                return 2
         if(move(startPos, -2, -1) == endPos):
-            return  4 + checkPos(positions, move(startPos, -2, -1), whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return  4 + checkPos(positions, move(startPos, -2, -1), whiteTurn)
+            else:
+                return 2
         return 0
 
     elif(loc == 6 or loc == 7 or loc == 22 or loc == 23):
@@ -122,42 +178,98 @@ def isValidMove(positions, whiteTurn, startPos, endPos):
         # white pawn
         moveLoc = move(startPos, 0, -1)
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
-            return 3
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return 3
+            else:
+                return 2
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
             return 1
         if((startPos - 1) / 8 == 6):
             moveLoc = move(startPos, 0, -2)
             if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
-                return 3
+                tempPositions = list(positions)
+                if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                    tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+                tempPositions[loc] = endPos
+                if(not inCheck(tempPositions, whiteTurn)):
+                    return 3
+                else:
+                    return 2
             if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
                 return 1
         moveLoc = move(startPos, 1, -1)
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
-            return 4 + checkPos(positions, moveLoc, whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return 4 + checkPos(positions, moveLoc, whiteTurn)
+            else:
+                return 2
         moveLoc = move(startPos, -1, -1)
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
-            return 4 + checkPos(positions, moveLoc, whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return 4 + checkPos(positions, moveLoc, whiteTurn)
+            else:
+                return 2
         return 0
 
     else:
         # black pawn
         moveLoc = move(startPos, 0, 1)
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
-            return 3
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return 3
+            else:
+                return 2
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
             return 1
         if((startPos - 1) / 8 == 1):
             moveLoc = move(startPos, 0, 2)
             if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) == -1):
-                return 3
+                tempPositions = list(positions)
+                if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                    tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+                tempPositions[loc] = endPos
+                if(not inCheck(tempPositions, whiteTurn)):
+                    return 3
+                else:
+                    return 2
             if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
                 return 1
         moveLoc = move(startPos, 1, 1)
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
-            return 4 + checkPos(positions, moveLoc, whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return 4 + checkPos(positions, moveLoc, whiteTurn)
+            else:
+                return 2
         moveLoc = move(startPos, -1, 1)
         if(moveLoc != -1 and moveLoc == endPos and checkPos(positions, moveLoc, whiteTurn) != -1):
-            return 4 + checkPos(positions, moveLoc, whiteTurn)
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, whiteTurn) != -1 and checkPos(tempPositions, endPos, whiteTurn) != -3):
+                tempPositions[checkPos(tempPositions, endPos, whiteTurn)] = 0
+            tempPositions[loc] = endPos
+            if(not inCheck(tempPositions, whiteTurn)):
+                return 4 + checkPos(positions, moveLoc, whiteTurn)
+            else:
+                return 2
         return 0
 
 def moveMany(positions, startPos, endPos, xMoveOne, yMoveOne, white):
@@ -169,7 +281,20 @@ def moveMany(positions, startPos, endPos, xMoveOne, yMoveOne, white):
         if(moveLoc == endPos):
             if(blocked):
                 return 1
-            return 4 + checkPos(positions, endPos, white)
+
+            loc = 0
+            for loc in range(0, 32):
+                if(positions[loc] == startPos):
+                    break
+            tempPositions = list(positions)
+            if(checkPos(tempPositions, endPos, white) != -1 and checkPos(tempPositions, endPos, white) != -3):
+                tempPositions[checkPos(tempPositions, endPos, white)] = 0
+            tempPositions[loc] = endPos
+
+            if(not inCheck(tempPositions, white)):
+                return 4 + checkPos(positions, endPos, white)
+            else:
+                return 2
         if(checkPos(positions, moveLoc, white) != -1):
             blocked = True
         xMove += xMoveOne
@@ -209,12 +334,12 @@ def inCheck(positions, white):
     
     for k in range(0, 15):
         if(positions[start + k] != 0):
-            if(isValidMove(positions, white, positions[start + k], positions[loc])):
+            if(isValidMove(positions, not white, positions[start + k], positions[loc]) >= 3):
                 return True
 
-    for k in range(-1,1):
-        for a in range(-1,1):
-            if(k != 0 and a != 0):
+    for k in range(-1,2):
+        for a in range(-1,2):
+            if(not(k == 0 and a == 0)):
                 if(move(positions[0], k, a) == positions[16]):
                     return True
 
@@ -232,13 +357,77 @@ def inCheckMate(positions, white):
 
     for k in range(0, 15):
         if(positions[start + k] != 0):
-            for a in range(1,64):
-                if(isValidMove(positions, white, positions[start + k], a)):
+            for a in range(1,65):
+                if(isValidMove(positions, white, positions[start + k], a) >= 3):
                     tempPositions = list(positions)
                     if(checkPos(tempPositions, a, white) != -1 and checkPos(tempPositions, a, white) != -3):
                         tempPositions[checkPos(tempPositions, a, white)] = 0
-                    tempPositions[k] = a
+                    tempPositions[start + k] = a
                     if(not inCheck(tempPositions, white)):
                         return False
     
     return True
+
+def pawnAttacks(positions, white):
+    toReturn = []
+    start = 8
+    if(not white):
+        start = 24
+    
+    for k in range(0, 8):
+        if(positions[start + k] != 0):
+            if(white): 
+                moveLoc = move(positions[start + k], 1, -1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+                moveLoc = move(positions[start + k], -1, -1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+            else:
+                moveLoc = move(positions[start + k], 1, 1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+                moveLoc = move(positions[start + k], -1, 1)
+                if(moveLoc > 0 and isValidMove(positions, white, positions[start + k], moveLoc) >= 3):
+                    toReturn.append(moveLoc)
+   
+    return toReturn
+
+def inCheckLocs(positions, white):
+    toReturn = []
+    loc = 0
+    start = 17
+    if(not white):
+        loc = 16
+        start = 1
+    
+    for k in range(0, 15):
+        if(positions[start + k] != 0):
+            if(isValidMove(positions, not white, positions[start + k], positions[loc]) >= 3):
+                toReturn.append(dirTo(positions[loc], positions[start + k]))
+
+    for k in range(-1,2):
+        for a in range(-1,2):
+            if(k != 0 or a != 0):
+                if(move(positions[0], k, a) == positions[16]):
+                    if(white):
+                        toReturn.append(positions[16])
+                    else:
+                        toReturn.append(positions[0])
+
+    return toReturn
+
+def dirTo(center, other):
+    newLoc = center
+        
+    if((center - 1) % 8 < (other - 1) % 8):
+        newLoc = move(newLoc, 1, 0)
+    if((center - 1) % 8 > (other - 1) % 8):
+        newLoc = move(newLoc, -1, 0)
+
+    if((center - 1) / 8 < (other - 1) / 8):
+        newLoc = move(newLoc, 0, 1)
+    if((center - 1) / 8 > (other - 1) / 8):
+        newLoc = move(newLoc, 0, -1)
+
+    return newLoc

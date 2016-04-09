@@ -17,6 +17,7 @@ class Gameboard(ndb.Model):
     lastMove = ndb.IntegerProperty()
     whitePlayer = ndb.IntegerProperty()
     blackPlayer = ndb.IntegerProperty()
+    loser = ndb.IntegerProperty()
 
 class User(ndb.Model):
     userID = ndb.IntegerProperty()
@@ -38,10 +39,12 @@ def comment_to_json(comment):
         'author': comment.author
     }
 
-def move_response_to_json(move, board):
+def move_response_to_json(move, board, checkmate, checkLocs):
     return {
         'move': move,
-        'board': board
+        'board': board,
+        'checkmate': checkmate,
+        'checkLocs': checkLocs
     }
 
 def new_game_to_json(team, id):
@@ -55,10 +58,21 @@ def opponent_joined_to_json(joined):
         'joined': joined
     }
 
-def opponent_moved_to_json(moved, board):
+
+def opponent_moved_to_json(moved, board, checkmate, pawnLocs, checkLocs, isWhite):
     return {
         'moved': moved,
-        'board': board
+        'board': board,
+        'checkmate': checkmate,
+        'pawnLocs': pawnLocs,
+        'checkLocs': checkLocs,
+        'isWhite': isWhite
+    }
+
+def board_to_json(board, loser):
+    return {
+        'board': board,
+        'loser': loser
     }
 
 def login_to_json(userInfo):
@@ -66,10 +80,10 @@ def login_to_json(userInfo):
         'alias': userInfo.alias,
         'spriteURL': userInfo.spriteURL,
         'games': userInfo.games,
-        'kingURL': userInfo.kingURL
-        'queenURL': userInfo.queenURL
-        'rookURL': userInfo.rookURL
-        'bishopURL': userInfo.bishopURL
-        'knightURL': userInfo.knightURL
+        'kingURL': userInfo.kingURL,
+        'queenURL': userInfo.queenURL,
+        'rookURL': userInfo.rookURL,
+        'bishopURL': userInfo.bishopURL,
+        'knightURL': userInfo.knightURL,
         'pawnURL': userInfo.pawnURL
     }
