@@ -83,7 +83,7 @@ var GamePage = React.createClass({
                         this.setState({checkmate: data['checkmate']});
                         this.setState({checkLocs: []});
                         this.setState({enemyCheckLocs: data['checkLocs']});
-                        this.setState({promotions: data['promotions']});
+                        this.setState({promotedUnits: data['promotions']});
                     }
 
                     this.setState({'unitKilled': ""});
@@ -326,6 +326,7 @@ var GamePage = React.createClass({
                     x = (board[i] - 1) % 8;
                     y = Math.floor((board[i] - 1) / 8);
                     if (this.state.promotedUnits[i]) {
+                        console.log("placing a queen");
                         positions[y][x] = places[1];
                     } else {
                         positions[y][x] = places[i];
@@ -338,6 +339,7 @@ var GamePage = React.createClass({
                     x = (board[i] - 1) % 8;
                     y = Math.floor((board[i] - 1) / 8);
                     if (this.state.promotedUnits[i]) {
+                        console.log("placing a queen");
                         positions[y][x] = places[17];
                     } else {
                         positions[y][x] = places[i];
@@ -443,7 +445,8 @@ var GamePage = React.createClass({
         console.log('waiting: ' + this.state.waiting);
 
         var divStyle = {
-            'height': '2000px'
+            'height': '2000px',
+            'width': '1500px'
         };
 
         var waiting = (<div></div>);
@@ -656,21 +659,21 @@ var GamePage = React.createClass({
 });
 
 var Legend = React.createClass({
-
-
     render: function() {
         var style = {
             'width': '250px',
             'height': '250px',
             'float': 'left',
-            'marginTop': '400px'
+            'marginTop': '400px',
+            'marginRight': '5px'
         };
 
         var greenStyle = {
             'width': '10px',
             'height': '10px',
-            'backgroundColor': '#DC143C',
+            'backgroundColor': '#BCED91',
             'float': 'left',
+            'marginRight': '5px'
         };
 
         var blueStyle = {
@@ -678,6 +681,7 @@ var Legend = React.createClass({
             'height': '10px',
             'backgroundColor': '#BFEFFF',
             'float': 'left',
+            'marginRight': '5px'
         };
 
         var yellowStyle = {
@@ -685,13 +689,15 @@ var Legend = React.createClass({
             'height': '10px',
             'backgroundColor': '#FBEC5D',
             'float': 'left',
+            'marginRight': '5px'
         };
 
         var redStyle = {
             'width': '10px',
             'height': '10px',
-            'backgroundColor': '#FBEC5D',
+            'backgroundColor': '#DC143C',
             'float': 'left',
+            'marginRight': '5px'
         };
 
         var orangeStyle = {
@@ -699,6 +705,7 @@ var Legend = React.createClass({
             'height': '10px',
             'backgroundColor': '#FF9912',
             'float': 'left',
+            'marginRight': '5px'
         };
 
         var divStyle = {
