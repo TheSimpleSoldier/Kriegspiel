@@ -92,6 +92,15 @@ var GamePage = React.createClass({
             }
 
         } else { // moving!
+            var loc = this.state.pieces[y][x];
+            if (this.state.isWhite && loc.includes('white')) {
+                this.setState({selected: spot});
+                return;
+            } else if (!this.state.isWhite && loc.includes('black')) {
+                this.setState({selected: spot});
+                return;
+            }
+
             this.checkIfMoveValid(x,y);
         }
     },
