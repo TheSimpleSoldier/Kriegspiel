@@ -41,7 +41,7 @@ def post_move():
     user = users.get_current_user()
     logging.info(user.user_id())
     oldBoard = models.Gameboard.query().order(models.Gameboard.timestamp).fetch(1)
-    positions = oldBoard.board
+    positions = oldBoard.board['positions']
 
     move = GameEngine.isValidMove(positions, is_white, start, end)
 
@@ -53,9 +53,10 @@ def post_move():
                 positions[loc] = end
                 break
 
+        tempDict = {'positions': positions}
         gameboard = models.Gameboard(
             isWhite = not is_white,
-            board = positions
+            board = tempDict
         )
         gameboard.put()
 
