@@ -29,6 +29,10 @@ def post_move():
     return models.move_response_to_json(move)
 
 
+@post('/newgame')
+def new_game():
+
+    return {'created': ''}
 
 @post('/comment')
 def create_new_comment():
