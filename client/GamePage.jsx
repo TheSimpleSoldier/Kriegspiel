@@ -19,6 +19,7 @@ var GamePage = React.createClass({
             waiting: false,
             gameId: 0,
             ourTeam: true,
+            waitingForMove: false,
             moves: 0,
             unitKilled: "",
             killedLoc: 0,
@@ -57,6 +58,8 @@ var GamePage = React.createClass({
             'gameId': this.state.gameId
         };
 
+        this.setState({waitingForMove: true});
+
         $.ajax({
                 url: urls.POST.move,
                 dataType: 'json',
@@ -64,6 +67,7 @@ var GamePage = React.createClass({
                 type: 'POST',
                 data: JSON.stringify(data),
                 success: function(data) {
+                    this.setState({waitingForMove: false});
                     this.setState({'moveToX': x, 'moveToY': y});
                     var newData = data['move'];
                     console.log("move: " + newData);
@@ -282,6 +286,10 @@ var GamePage = React.createClass({
     },
 
     opponentMoved: function(board, checkmate, pawnKillLocs, checkLocs, isWhite) {
+        if (this.state.waitingForMove) {
+            return;
+        }
+
         this.updateGameState(board);
 
         this.setState({pawnKillLocs: pawnKillLocs});
@@ -706,6 +714,7 @@ var WaitingForOpponent = React.createClass({
 });
 
 var Piece = React.createClass({
+    mixins: [SetIntervalMixin],
     propTypes: {
         piece: React.PropTypes.string.isRequired,
         onClick: React.PropTypes.func.isRequired,
@@ -721,16 +730,38 @@ var Piece = React.createClass({
     onClick: function() {
         this.props.onClick(this.props.xLoc, this.props.yLoc);
     },
-
+    update: function() {
+      this.setState({'':''});
+    },
+    componentDidMount: function() {
+        this.update();
+        this.setInterval(this.update, 2000);
+    },
     render: function() {
 
-        var imageStyle = {
-            'width': '80',
-            'height': '80px'
-        };
+        console.log(window.innerWidth);
 
-        var xval = (this.props.xLoc * 100 + 100);
-        var yval = (this.props.yLoc * 100 + 300);
+        var screenWidth = window.innerWidth;
+        var screenHeight = window.innerHeight;
+
+        var imageSize = Math.min(100, Math.max(60, (0.8 * (Math.min(screenHeight / 8), screenWidth / 8))));
+
+        var yOffset = 300;
+
+        if (window.innerWidth < 900) {
+            yOffset = 400;
+        } else if (window.innerWidth < 700) {
+            yOffset = 600;
+        } else if (window.innerWidth < 500) {
+            yOffset = 1000;
+        } else if (window.innerWidth < 300) {
+            yOffset = 1400;
+        } else if (window.innerWidth < 200) {
+            yOffset = 2000;
+        }
+
+        var xval = (this.props.xLoc * imageSize + 100);
+        var yval = (this.props.yLoc * imageSize + yOffset);
 
         var divStyle = {
             'left': xval + "px",
@@ -740,8 +771,13 @@ var Piece = React.createClass({
 
         var buttonStyle = {
             'backgroundColor': '#cccccc',
-            'width': '100px',
-            'height': '100px'
+            'width': imageSize + 'px',
+            'height': imageSize + 'px'
+        };
+
+        var imageStyle = {
+            'width': (imageSize - 20) + 'px',
+            'height': (imageSize - 20) + 'px'
         };
 
         if (this.props.selected) {
