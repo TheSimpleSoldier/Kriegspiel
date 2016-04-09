@@ -1,8 +1,10 @@
 def isValidMove(positions, whiteTurn, startPos, endPos):
-    loc = 0
+    loc = -1
     for loc in range(0, 32):
         if(positions[loc] == startPos):
             break
+    if(loc == -1):
+        return False
     if(loc == 0 or loc == 16):
         # king move
         toReturn = 0

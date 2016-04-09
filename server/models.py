@@ -15,6 +15,8 @@ class Gameboard(ndb.Model):
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     board = ndb.JsonProperty()
     lastMove = ndb.IntegerProperty()
+    whitePlayer = ndb.IntegerProperty()
+    blackPlayer = ndb.IntegerProperty()
 
 class User(ndb.Model):
     userID = ndb.IntegerProperty()

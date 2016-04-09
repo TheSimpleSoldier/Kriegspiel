@@ -7,6 +7,7 @@ from google.appengine.api import users
 
 import models
 import GameEngine
+import AI
 
 @post('/login')
 def login():
@@ -113,8 +114,33 @@ def post_move():
 
         oldBoard[0].put()
 
+    move2 = move
+
+    if(oldBoard[0].opponent > 0):
+        if(oldBoard[0].opponent == 1):
+            toMove = randomAI(positions, False)
+            move = isValidMove(positions, False, toMove[0], toMove[1])
+            if(move >= 3):
+                oldBoard[0].lastMove = toMove[1]
+                oldBoard[0].isWhite = not oldBoard[0].isWhite
+                if(move >= 4):
+                    positions[move - 4] = 0
+                    move = toMove[1]
+                    for loc in range(0, 32):
+                        if positions[loc] == toMove[1]:
+                            move = loc
+
+                for loc in range(0, 32):
+                    if positions[loc] == toMove[0]:
+                        positions[loc] = toMove[1]
+                        break
+                
+                oldBoard[0].board = positions
+                oldBoard[0].put()
+
+
     response.content_type = 'application/json'
-    return models.move_response_to_json(move, oldBoard[0].board)
+    return models.move_response_to_json(move2, oldBoard[0].board)
 
 
 @post('/newgame')
@@ -136,8 +162,13 @@ def new_game():
                                  board=GameEngine.getInitialState(),
                                  gameID=id,
                                  hasStarted=False,
-                                 lastMove=0
+                                 lastMove=0,
+                                 whitePlayer=0,
+                                 BlackPlayer=request.json.get('opponent')
         )
+
+        if(request.json.get('opponent') != 0):
+            board.hasStarted = True
 
         board.put()
         response.content_type = 'application/json'

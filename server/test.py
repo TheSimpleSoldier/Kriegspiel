@@ -1,4 +1,5 @@
 from GameEngine import *
+from AI import *
 
 state = getInitialState()
 
@@ -56,3 +57,15 @@ check3State[0] = 1
 check3State[2] = 12
 check3State[18] = 4
 print str(inCheckMate(check3State, True)) + " = False"
+print "random ai"
+state = getInitialState()
+print randomAI(state, True)
+print randomAI(state, True)
+print randomAI(state, True)
+print randomAI(state, True)
+print randomAI(state, True)
+print randomAI(state, False)
+print randomAI(state, False)
+print randomAI(state, False)
+print randomAI(state, False)
+print randomAI(state, False)
