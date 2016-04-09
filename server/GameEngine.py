@@ -390,3 +390,42 @@ def pawnAttacks(positions, white):
                     toReturn.append(moveLoc)
    
     return toReturn
+
+def inCheckLocs(positions, white):
+    toReturn = []
+    loc = 0
+    start = 17
+    if(not white):
+        loc = 16
+        start = 1
+    
+    for k in range(0, 14):
+        if(positions[start + k] != 0):
+            if(isValidMove(positions, not white, positions[start + k], positions[loc]) >= 3):
+                toReturn.append(dirTo(positions[loc], positions[start + k]))
+
+    for k in range(-1,1):
+        for a in range(-1,1):
+            if(k != 0 and a != 0):
+                if(move(positions[0], k, a) == positions[16]):
+                    if(white):
+                        toReturn.append(positions[16])
+                    else:
+                        toReturn.append(positions[0])
+
+    return toReturn
+
+def dirTo(center, other):
+    newLoc = center
+        
+    if((center - 1) % 8 < (other - 1) % 8):
+        newLoc = move(newLoc, 1, 0)
+    if((center - 1) % 8 > (other - 1) % 8):
+        newLoc = move(newLoc, -1, 0)
+
+    if((center - 1) / 8 < (other - 1) / 8):
+        newLoc = move(newLoc, 0, 1)
+    if((center - 1) / 8 > (other - 1) / 8):
+        newLoc = move(newLoc, 0, -1)
+
+    return newLoc

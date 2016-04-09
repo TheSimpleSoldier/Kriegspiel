@@ -84,3 +84,13 @@ attackState[2] = 24
 print str(pawnAttacks(attackState, True)) + " = [3,1]"
 print str(pawnAttacks(attackState, False)) + " = [24,22]"
 print str(pawnAttacks(getInitialState(), False)) + " = []"
+
+print "check locs"
+checkState = [0] * 32
+checkState[0] = 36
+checkState[17] = 9
+checkState[18] = 39
+checkState[19] = 28
+checkState[20] = 21
+checkState[22] = 50
+print str(inCheckLocs(checkState, True)) + " = [27,37,28,29,43]"
